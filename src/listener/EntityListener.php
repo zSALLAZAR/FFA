@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace zsallazar\ffa\listener;
 
-use pocketmine\entity\effect\VanillaEffects;
-use pocketmine\world\sound\BlockBreakSound;
-use pocketmine\world\sound\ChorusFlowerGrowSound;
-use pocketmine\world\sound\ExplodeSound;
 use pocketmine\world\sound\PotionSplashSound;
-use pocketmine\world\sound\ScrapeSound;
 use zsallazar\ffa\session\Session;
 use pocketmine\item\Armor;
 use pocketmine\world\particle\PotionSplashParticle;
