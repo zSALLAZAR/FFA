@@ -1,0 +1,7 @@
+name: FFA
+description: A simple ffa plugin for PocketMine-MP
+main: zsallazar\ffa\FFA
+src-namespace-prefix: zsallazar\ffa
+version: 1.0.0
+api: 5.0.0
+author: zSALLAZAR
