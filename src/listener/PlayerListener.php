@@ -104,7 +104,7 @@ final class PlayerListener implements Listener{
                 $effects->add(new EffectInstance(VanillaEffects::REGENERATION(), 20, 5, true, true));
                 if ($xpLevel % 5 === 0) {
                     //Add strength if the killer has a killstreak divisible by 5
-                    $effects->add(new EffectInstance(VanillaEffects::STRENGTH(), $xpLevel * 5, 0, true, true));
+                    $effects->add(new EffectInstance(VanillaEffects::STRENGTH(), $xpLevel * 20, 0, true, true));
                 }
 
                 $damagerSession->addKill();
