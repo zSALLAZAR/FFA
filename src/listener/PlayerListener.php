@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace zsallazar\ffa\listener;
 
+use pocketmine\block\utils\DyeColor;
 use pocketmine\lang\Translatable;
+use pocketmine\world\particle\PotionSplashParticle;
+use pocketmine\world\sound\PotionSplashSound;
 use zsallazar\ffa\FFA;
 use zsallazar\ffa\session\Session;
 use pocketmine\event\player\PlayerExhaustEvent;
@@ -74,6 +77,13 @@ final class PlayerListener implements Listener{
         $event->setDrops([]);
         $event->setXpDropAmount(0);
 
+        //Creates potion-splash-particles in the color of the victim's helmet at death
+        $player->getWorld()->addParticle(
+            $player->getPosition(),
+            new PotionSplashParticle(DyeColor::LIGHT_GRAY->getRgbValue())
+        );
+        $player->broadcastSound(new PotionSplashSound());
+
         $session->addDeath();
         $session->joinArena(false);
         $session->setLastDamager(null);
@@ -94,7 +104,7 @@ final class PlayerListener implements Listener{
                 $effects->add(new EffectInstance(VanillaEffects::REGENERATION(), 20, 5, true, true));
                 if ($xpLevel % 5 === 0) {
                     //Add strength if the killer has a killstreak divisible by 5
-                    $effects->add(new EffectInstance(VanillaEffects::STRENGTH(), $xpLevel * 20, 0, true, true));
+                    $effects->add(new EffectInstance(VanillaEffects::STRENGTH(), $xpLevel * 5, 0, true, true));
                 }
 
                 $damagerSession->addKill();

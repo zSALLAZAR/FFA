@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace zsallazar\ffa\listener;
 
-use pocketmine\world\sound\PotionSplashSound;
 use zsallazar\ffa\session\Session;
-use pocketmine\item\Armor;
-use pocketmine\world\particle\PotionSplashParticle;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\world\sound\BlockPunchSound;
@@ -18,7 +15,6 @@ use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\event\Listener;
 use pocketmine\player\Player;
 use pocketmine\world\sound\AmethystBlockChimeSound;
-use AssertionError;
 
 final class EntityListener implements Listener{
     public function onProjectileLaunch(ProjectileLaunchEvent $event): void{
@@ -86,19 +82,5 @@ final class EntityListener implements Listener{
         }
 
         Session::get($victim)->setLastDamager(Session::get($damager));
-
-        if ($event->getFinalDamage() >= $victim->getHealth()) {
-            $helmet = $victim->getArmorInventory()->getHelmet();
-
-            if ($helmet instanceof Armor) {
-                //Creates potion-splash-particles in the color of the victim's helmet at death
-                $victim->getWorld()->addParticle(
-                    $victim->getPosition(),
-                    new PotionSplashParticle($helmet->getCustomColor() ?? throw new AssertionError('Helmet should have a custom color'))
-                );
-            }
-
-            $victim->broadcastSound(new PotionSplashSound());
-        }
     }
 }

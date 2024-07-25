@@ -83,6 +83,13 @@ final class Session{
         return $this->lastDamager;
     }
 
+    public function setLastDamager(?self $lastDamager): void{
+        $this->lastDamager = $lastDamager;
+        if ($lastDamager !== null) {
+            $this->lastDamagerDuration = microtime(true) + 10;
+        }
+    }
+
     public function joinArena(bool $addItems): void{
         $armorInv = $this->player->getArmorInventory();
 
@@ -116,13 +123,6 @@ final class Session{
             $armorInv->setChestplate($ffaItem(VanillaItems::IRON_CHESTPLATE()));
             $armorInv->setLeggings($ffaItem(VanillaItems::IRON_LEGGINGS()));
             $armorInv->setBoots($ffaItem(VanillaItems::IRON_BOOTS()));
-        }
-    }
-
-    public function setLastDamager(?self $lastDamager): void{
-        $this->lastDamager = $lastDamager;
-        if ($lastDamager !== null) {
-            $this->lastDamagerDuration = microtime(true) + 10;
         }
     }
 
