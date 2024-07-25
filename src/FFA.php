@@ -14,7 +14,7 @@ use pocketmine\utils\TextFormat as TF;
 use pocketmine\world\World;
 
 final class FFA extends PluginBase{
-    public const PREFIX = TF::BOLD . TF::MINECOIN_GOLD . "FFA " . TF::GRAY . "» " . TF::RESET;
+    public const string PREFIX = TF::BOLD . TF::MINECOIN_GOLD . "FFA " . TF::GRAY . "» " . TF::RESET;
 
     protected function onEnable(): void{
         $server = $this->getServer();

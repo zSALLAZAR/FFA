@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace zsallazar\ffa\listener;
 
+use pocketmine\lang\Translatable;
 use zsallazar\ffa\FFA;
 use zsallazar\ffa\session\Session;
 use pocketmine\event\player\PlayerExhaustEvent;
@@ -34,14 +35,14 @@ final class PlayerListener implements Listener{
         $event->setJoinMessage(TF::BOLD . TF::GREEN . '» ' . TF::RESET . $player->getDisplayName() . ' ' . TF::DARK_GRAY . '[' . count($server->getOnlinePlayers()) . '/' . $server->getMaxPlayers() . ']');
 
         $player->getNetworkSession()->sendDataPacket(GameRulesChangedPacket::create([
-            'doImmediateRespawn' => new BoolGameRule(true, false),
-            'showTags' => new BoolGameRule(false, false) //Don't show item tags
+            "doImmediateRespawn" => new BoolGameRule(true, false),
+            "showTags" => new BoolGameRule(false, false) //Don't show item tags
         ]));
         $player->setHealth($player->getMaxHealth());
         $xpManager->setCanAttractXpOrbs(false);
         $xpManager->setXpAndProgress(0, 0); //Reset killstreak
 
-        Session::get($player)->joinArena(!$player->hasPlayedBefore());
+        Session::get($player)->joinArena(true);
     }
 
     public function onExhaust(PlayerExhaustEvent $event): void{
@@ -64,8 +65,11 @@ final class PlayerListener implements Listener{
         $player = $event->getPlayer();
         $session = Session::get($player);
         $lastDamageCause = $player->getLastDamageCause();
+        $deathMessage = $event->getDeathMessage();
 
-        $event->setDeathMessage($event->getDeathMessage()->prefix(FFA::PREFIX));
+        if ($deathMessage instanceof Translatable) {
+            $event->setDeathMessage($deathMessage->prefix(FFA::PREFIX));
+        }
         $event->setKeepInventory(true); //So we don't have to give new items every time a player dies
         $event->setDrops([]);
         $event->setXpDropAmount(0);
@@ -110,7 +114,7 @@ final class PlayerListener implements Listener{
         $player = $event->getPlayer();
         $server = $player->getServer();
 
-        $event->setQuitMessage(TF::BOLD . TF::RED . '« ' . TF::RESET . $player->getDisplayName() . ' ' . TF::DARK_GRAY . '[' . count($server->getOnlinePlayers()) - 1 . '/' . $server->getMaxPlayers() . ']');
+        $event->setQuitMessage(TF::BOLD . TF::RED . '« ' . TF::RESET . $player->getDisplayName() . ' ' . TF::DARK_GRAY . '[' . (count($server->getOnlinePlayers()) - 1) . '/' . $server->getMaxPlayers() . ']');
 
         if (Session::get($player)->getLastDamager() !== null) {
             //Prevent combat logging

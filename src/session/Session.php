@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace zsallazar\ffa\session;
 
-use AssertionError;
-use pocketmine\block\utils\DyeColor;
 use pocketmine\item\Armor;
-use pocketmine\item\ItemTypeIds;
+use pocketmine\item\Durable;
+use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
-use pocketmine\utils\TextFormat as TF;
 use pocketmine\world\sound\EndermanTeleportSound;
 use WeakMap;
-use function array_rand;
 use function microtime;
 use function round;
 
@@ -98,43 +98,24 @@ final class Session{
             $armorInv->clearAll();
             $this->player->getOffHandInventory()->clearAll();
 
-            foreach (FFAItems::getAll() as $ffaItem) {
-                $item = $ffaItem->getItem();
-                if ($item->getTypeId() === ItemTypeIds::LEATHER_CAP) {
-                    //The helmet needs to be changed every time the player joins the arena
-                    continue;
+            $ffaItem = function(Item $item): Item{
+                $item->getNamedTag()->setByte("minecraft:item_lock", $item instanceof Armor ? 1 : 2); //Don't play the item-drop animation
+                if ($item instanceof Durable) {
+                    $item->setUnbreakable();
                 }
+                return $item;
+            };
 
-                ($item instanceof Armor ? $armorInv : $inv)->setItem($ffaItem->getDefaultSlot(), $item);
-            }
-        }
-
-        $helmet = FFAItems::HELMET()->getItem();
-        if ($helmet instanceof Armor) {
-            $color = DyeColor::getAll()[array_rand(DyeColor::getAll())];
-
-            $helmet->setCustomColor($color->getRgbValue());
-            $helmet->setCustomName(TF::RESET . match (true) {
-                default => throw new AssertionError("Helmet should have a custom color"),
-                    $color->equals(DyeColor::WHITE()) => TF::WHITE,
-                    $color->equals(DyeColor::ORANGE()) => TF::GOLD,
-                    $color->equals(DyeColor::MAGENTA()) => TF::DARK_PURPLE,
-                    $color->equals(DyeColor::LIGHT_BLUE()) => TF::BLUE,
-                    $color->equals(DyeColor::YELLOW()) => TF::YELLOW,
-                    $color->equals(DyeColor::LIME()) => TF::GREEN,
-                    $color->equals(DyeColor::PINK()) => TF::LIGHT_PURPLE,
-                    $color->equals(DyeColor::GRAY()) => TF::DARK_GRAY,
-                    $color->equals(DyeColor::LIGHT_GRAY()) => TF::GRAY,
-                    $color->equals(DyeColor::CYAN()) => TF::DARK_AQUA,
-                    $color->equals(DyeColor::PURPLE()) => TF::DARK_PURPLE,
-                    $color->equals(DyeColor::BLUE()) => TF::DARK_BLUE,
-                    $color->equals(DyeColor::BROWN()) => TF::MINECOIN_GOLD,
-                    $color->equals(DyeColor::GREEN()) => TF::DARK_GREEN,
-                    $color->equals(DyeColor::RED()) => TF::DARK_RED,
-                    $color->equals(DyeColor::BLACK()) => TF::BLACK
-            } . $color->getDisplayName());
-
-            $armorInv->setHelmet($helmet);
+            //TODO: Make this configurable
+            $inv->addItem(
+                $ffaItem(VanillaItems::IRON_SWORD()),
+                $ffaItem(VanillaItems::BOW()->addEnchantment(new EnchantmentInstance(VanillaEnchantments::INFINITY()))),
+                $ffaItem(VanillaItems::ARROW())
+            );
+            $armorInv->setHelmet($ffaItem(VanillaItems::IRON_HELMET()));
+            $armorInv->setChestplate($ffaItem(VanillaItems::IRON_CHESTPLATE()));
+            $armorInv->setLeggings($ffaItem(VanillaItems::IRON_LEGGINGS()));
+            $armorInv->setBoots($ffaItem(VanillaItems::IRON_BOOTS()));
         }
     }
 
