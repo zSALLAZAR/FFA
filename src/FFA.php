@@ -11,7 +11,6 @@ use zsallazar\ffa\listener\InventoryListener;
 use zsallazar\ffa\listener\PlayerListener;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\TextFormat as TF;
-use pocketmine\world\World;
 
 final class FFA extends PluginBase{
     public const string PREFIX = TF::BOLD . TF::MINECOIN_GOLD . "FFA " . TF::GRAY . "» " . TF::RESET;
@@ -20,12 +19,6 @@ final class FFA extends PluginBase{
         $server = $this->getServer();
         $pluginManager = $server->getPluginManager();
         $commandMap = $server->getCommandMap();
-
-        if (($world = $server->getWorldManager()->getDefaultWorld()) !== null) {
-            $world->setDifficulty(World::DIFFICULTY_HARD);
-            $world->setTime(World::TIME_NOON);
-            $world->stopTime();
-        }
 
         $pluginManager->registerEvents(new PlayerListener(), $this);
         $pluginManager->registerEvents(new EntityListener(), $this);
