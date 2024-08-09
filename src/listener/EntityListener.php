@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace zsallazar\ffa\listener;
 
+use pocketmine\event\entity\EntityItemPickupEvent;
+use pocketmine\item\VanillaItems;
+use zsallazar\ffa\KitManager;
 use zsallazar\ffa\session\Session;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -45,6 +48,26 @@ final class EntityListener implements Listener{
             //Plays a sound when a player hits another player with a projectile
             $entity->broadcastSound(new AmethystBlockChimeSound(), [$entity]);
             $entity->broadcastSound(new BlockPunchSound(VanillaBlocks::AMETHYST()), [$entity]);
+        }
+    }
+
+    public function onItemPickup(EntityItemPickupEvent $event): void{
+        $item = $event->getItem();
+        $player = $event->getEntity();
+
+        //This fixes that picked up arrows do not have the item_lock tag
+        if ($player instanceof Player && $item->getTypeId() === VanillaItems::ARROW()->getTypeId()) {
+            $event->setItem(VanillaItems::AIR());
+
+            $item->getNamedTag()->setByte(KitManager::TAG_ITEM_LOCK, KitManager::VALUE_ITEM_LOCK_IN_INVENTORY);
+
+            $playerInventory = match(true) {
+                $player->getOffHandInventory()->getItem(0)->canStackWith($item) && $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
+                $player->getInventory()->canAddItem($item) => $player->getInventory(),
+                default => null
+            };
+
+            $playerInventory?->addItem($item);
         }
     }
 
