@@ -45,23 +45,25 @@ final class KitManager{
                     self::LORE => [],
                     self::COUNT => 1,
                     self::ENCHANTMENTS => [
-                        self::ENCHANTMENT_NAME => "sharpness",
-                        self::ENCHANTMENT_LEVEL => 1
-                    ],
+                        [
+                            self::ENCHANTMENT_NAME => "sharpness",
+                            self::ENCHANTMENT_LEVEL => 1
+                        ]
+                    ]
                 ],
                 1 => [
                     self::NAME => "bow",
                     self::CUSTOM_NAME => "",
                     self::LORE => [],
                     self::COUNT => 1,
-                    self::ENCHANTMENTS => [],
+                    self::ENCHANTMENTS => []
                 ],
                 8 => [
                     self::NAME => "nether_star",
                     self::CUSTOM_NAME => TextFormat::BOLD . TextFormat::MINECOIN_GOLD . "FFA",
                     self::LORE => [],
                     self::COUNT => 1,
-                    self::ENCHANTMENTS => [],
+                    self::ENCHANTMENTS => []
                 ]
             ],
             self::ARMOR_INVENTORY => [
@@ -70,28 +72,28 @@ final class KitManager{
                     self::CUSTOM_NAME => "",
                     self::LORE => [],
                     self::COUNT => 1,
-                    self::ENCHANTMENTS => [],
+                    self::ENCHANTMENTS => []
                 ],
                 1 => [
                     self::NAME => "iron_chestplate",
                     self::CUSTOM_NAME => "",
                     self::LORE => [],
                     self::COUNT => 1,
-                    self::ENCHANTMENTS => [],
+                    self::ENCHANTMENTS => []
                 ],
                 2 => [
                     self::NAME => "iron_leggings",
                     self::CUSTOM_NAME => "",
                     self::LORE => [],
                     self::COUNT => 1,
-                    self::ENCHANTMENTS => [],
+                    self::ENCHANTMENTS => []
                 ],
                 3 => [
                     self::NAME => "iron_boots",
                     self::CUSTOM_NAME => "",
                     self::LORE => [],
                     self::COUNT => 1,
-                    self::ENCHANTMENTS => [],
+                    self::ENCHANTMENTS => []
                 ]
             ],
             self::OFF_HAND_INVENTORY => [
