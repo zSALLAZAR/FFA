@@ -6,13 +6,17 @@ namespace zsallazar\ffa\listener;
 
 use pocketmine\event\inventory\InventoryTransactionEvent;
 use pocketmine\event\Listener;
-use pocketmine\item\Armor;
+use zsallazar\ffa\FFA;
+use zsallazar\ffa\KitManager;
 
 final class InventoryListener implements Listener{
     public function onTransaction(InventoryTransactionEvent $event): void{
         foreach ($event->getTransaction()->getActions() as $action) {
-            if ($action->getSourceItem() instanceof Armor) {
-                //Players shouldn't take off their armor
+            $item = $action->getSourceItem();
+            if (
+                FFA::getInstance()->getSettings()->isArmorChangeable() &&
+                $item->getNamedTag()->getByte(KitManager::TAG_ITEM_LOCK, 0) === KitManager::VALUE_ITEM_LOCK_IN_SLOT
+            ) {
                 $event->cancel();
             }
         }

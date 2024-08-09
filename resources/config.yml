@@ -1,0 +1,28 @@
+# Do not change this
+config-version: 1.0
+
+settings:
+    prefix: "§l§gFFA §7»§r "
+
+    # If the scoreboard should be enabled
+    scoreboard: true
+
+    # How long it takes for players to be out of combat after being hit in seconds
+    # Set this to 0 if you want to disable this
+    combat-time: 10
+
+    safe-zone:
+        # Supported types: "circle", "square", "none"
+        # Set to "none" if you want to disable this
+        type: circle
+        # The center of the circle will be the spawn-position by default
+        circle:
+            center: 0;50;0
+            radius: 10
+        square:
+            from: 0;0;0
+            to: 0;0;0
+
+    kit:
+        # If players should be able to take off their armor
+        armor-changeable: false

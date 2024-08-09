@@ -5,6 +5,9 @@ branches:
 projects:
   FFA:
     path: ""
+    libs:
+      - src: Frago9876543210/forms/libforms
+        version: ^1.0.0
     lint:
       phpstan: false
 ...

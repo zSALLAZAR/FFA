@@ -9,6 +9,7 @@ use pocketmine\lang\Translatable;
 use pocketmine\world\particle\PotionSplashParticle;
 use pocketmine\world\sound\PotionSplashSound;
 use zsallazar\ffa\FFA;
+use zsallazar\ffa\KitManager;
 use zsallazar\ffa\session\Session;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerInteractEvent;
@@ -23,19 +24,11 @@ use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
 use pocketmine\player\Player;
-use pocketmine\utils\TextFormat as TF;
-use function count;
 
 final class PlayerListener implements Listener{
     public function onJoin(PlayerJoinEvent $event): void{
         $player = $event->getPlayer();
-        $server = $player->getServer();
-        $name = $player->getName();
         $xpManager = $player->getXpManager();
-
-        $player->setDisplayName(($server->isOp($name) ? TF::MINECOIN_GOLD : TF::WHITE) . $name . TF::RESET);
-
-        $event->setJoinMessage(TF::BOLD . TF::GREEN . '» ' . TF::RESET . $player->getDisplayName() . ' ' . TF::DARK_GRAY . '[' . count($server->getOnlinePlayers()) . '/' . $server->getMaxPlayers() . ']');
 
         $player->getNetworkSession()->sendDataPacket(GameRulesChangedPacket::create([
             "doImmediateRespawn" => new BoolGameRule(true, false),
@@ -53,7 +46,8 @@ final class PlayerListener implements Listener{
     }
 
     public function onDropItem(PlayerDropItemEvent $event): void{
-        if ($event->getPlayer()->isAdventure(true)) {
+        //Locked items should not be dropped
+        if ($event->getItem()->getNamedTag()->getByte(KitManager::TAG_ITEM_LOCK, 0) !== 0) {
             $event->cancel();
         }
     }
@@ -71,13 +65,13 @@ final class PlayerListener implements Listener{
         $deathMessage = $event->getDeathMessage();
 
         if ($deathMessage instanceof Translatable) {
-            $event->setDeathMessage($deathMessage->prefix(FFA::PREFIX));
+            $event->setDeathMessage($deathMessage->prefix(FFA::getInstance()->getSettings()->getPrefix()));
         }
         $event->setKeepInventory(true); //So we don't have to give new items every time a player dies
         $event->setDrops([]);
         $event->setXpDropAmount(0);
 
-        //Creates potion-splash-particles in the color of the victim's helmet at death
+        //Creates potion-splash-particles at death
         $player->getWorld()->addParticle(
             $player->getPosition(),
             new PotionSplashParticle(DyeColor::LIGHT_GRAY->getRgbValue())
@@ -122,9 +116,6 @@ final class PlayerListener implements Listener{
 
     public function onQuit(PlayerQuitEvent $event): void{
         $player = $event->getPlayer();
-        $server = $player->getServer();
-
-        $event->setQuitMessage(TF::BOLD . TF::RED . '« ' . TF::RESET . $player->getDisplayName() . ' ' . TF::DARK_GRAY . '[' . (count($server->getOnlinePlayers()) - 1) . '/' . $server->getMaxPlayers() . ']');
 
         if (Session::get($player)->getLastDamager() !== null) {
             //Prevent combat logging

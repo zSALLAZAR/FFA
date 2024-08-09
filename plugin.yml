@@ -5,3 +5,11 @@ src-namespace-prefix: zsallazar\ffa
 version: 1.0.0
 api: 5.0.0
 author: zSALLAZAR
+
+permissions:
+  ffa.command:
+    default: true
+  ffa.spectate:
+    default: op
+  ffa.setup:
+    default: op
