@@ -103,7 +103,7 @@ final class Session{
         $this->editingKit = true;
 
         $this->addItems();
-
+        $this->player->teleport($this->player->getWorld()->getSafeSpawn());
         $this->player->setGamemode(GameMode::CREATIVE);
 
         //Remove the item_lock tag so the editor can move/delete the items
@@ -128,16 +128,18 @@ final class Session{
     }
 
     public function stopEditingKit(): void{
-        FFA::getInstance()->getKitManager()->saveKit(
-            $this->player->getInventory()->getContents(),
-            $this->player->getArmorInventory()->getContents(),
-            $this->player->getOffHandInventory()->getContents()
-        );
+        $kitManager = FFA::getInstance()->getKitManager();
+        $kitManager->saveKit(KitManager::INVENTORY, $this->player->getInventory()->getContents());
+        $kitManager->saveKit(KitManager::ARMOR_INVENTORY, $this->player->getArmorInventory()->getContents());
+        $kitManager->saveKit(KitManager::OFF_HAND_INVENTORY, $this->player->getOffHandInventory()->getContents());
 
         $this->editingKit = false;
 
-        $this->player->setGamemode(GameMode::ADVENTURE);
         $this->player->sendMessage(FFA::getInstance()->getSettings()->getPrefix() . TextFormat::GREEN . "The Kit was successfully saved!");
+
+        foreach (self::$sessions as $session) {
+            $session->joinArena(true);
+        }
     }
 
     public function getKills(): int{ return $this->kills; }

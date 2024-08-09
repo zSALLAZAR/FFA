@@ -131,12 +131,16 @@ final class KitManager{
         $items = [];
 
         /**
-         * @var array{
+         * @var int $index
+         * @phpstan-var array{
          *     name: string,
          *     custom_name: string,
          *     lore: string[],
          *     count: int,
-         *     enchantments: array<array<string, string|int>>
+         *     enchantments: array<array{
+         *         name: string,
+         *         level: int
+         *     }>
          * } $data
          */
         foreach ((array)$this->kit->get($key, []) as $index => $data) {
@@ -151,11 +155,11 @@ final class KitManager{
             $item->setCount($data[self::COUNT]);
 
             foreach ($data[self::ENCHANTMENTS] as $enchantmentInstance) {
-                if (($enchantment = StringToEnchantmentParser::getInstance()->parse((string)$enchantmentInstance[self::ENCHANTMENT_NAME])) === null) {
+                if (($enchantment = StringToEnchantmentParser::getInstance()->parse($enchantmentInstance[self::ENCHANTMENT_NAME])) === null) {
                     FFA::getInstance()->getLogger()->error("Failed to load unknown enchantment for $name");
                     continue;
                 }
-                $item->addEnchantment(new EnchantmentInstance($enchantment, (int)$enchantmentInstance[self::ENCHANTMENT_LEVEL]));
+                $item->addEnchantment(new EnchantmentInstance($enchantment, $enchantmentInstance[self::ENCHANTMENT_LEVEL]));
             }
 
             $items[$index] = $item;
@@ -180,36 +184,45 @@ final class KitManager{
     public function getOffHandInventoryItems(): array{ return $this->items[self::OFF_HAND_INVENTORY]; }
 
     /**
-     * @param Item[] $invItems
-     * @param Item[] $armorInvItems
-     * @param Item[] $offHandInvItems
+     * @phpstan-param array<int, Item> $items
      */
-    public function saveKit(array $invItems, array $armorInvItems, array $offHandInvItems): void{
-        $saving = function(array $items): array{
-            $itemsData = [];
+    public function saveKit(string $key, array $items): void{
+        /** @phpstan-var array<int, array{
+         *     name: string,
+         *     custom_name: string,
+         *     lore: string[],
+         *     count: int,
+         *     enchantments: array<array{
+         *         name: string,
+         *         level: int
+         *     }>
+         * }> $itemsData
+         */
+        $itemsData = [];
 
-            foreach ($items as $index => $item) {
-                $enchantments = [];
+        foreach ($items as $index => $item) {
+            /** @phpstan-var array<array{
+             *     name: string,
+             *     level: int
+             * }> $enchantments
+             */
+            $enchantments = [];
 
-                foreach ($item->getEnchantments() as $enchantment) {
-                    $enchantments[] = [
-                        self::ENCHANTMENT_NAME => $enchantment->getType()->getName(),
-                        self::ENCHANTMENT_LEVEL => $enchantment->getLevel()
-                    ];
-                }
-                $itemsData[$index] = [
-                    self::NAME => $item->getVanillaName(),
-                    self::CUSTOM_NAME => $item->getCustomName(),
-                    self::LORE => $item->getLore(),
-                    self::COUNT => $item->getCount(),
-                    self::ENCHANTMENTS => $enchantments
+            foreach ($item->getEnchantments() as $enchantment) {
+                $enchantments[] = [
+                    self::ENCHANTMENT_NAME => $enchantment->getType()->getName(),
+                    self::ENCHANTMENT_LEVEL => $enchantment->getLevel()
                 ];
             }
-            return $itemsData;
-        };
+            $itemsData[$index] = [
+                self::NAME => $item->getVanillaName(),
+                self::CUSTOM_NAME => $item->getCustomName(),
+                self::LORE => $item->getLore(),
+                self::COUNT => $item->getCount(),
+                self::ENCHANTMENTS => $enchantments
+            ];
+        }
 
-        $this->kit->set(self::INVENTORY, $saving($invItems));
-        $this->kit->set(self::ARMOR_INVENTORY, $saving($armorInvItems));
-        $this->kit->set(self::OFF_HAND_INVENTORY, $saving($offHandInvItems));
+        $this->kit->set($key, $itemsData);
     }
 }
