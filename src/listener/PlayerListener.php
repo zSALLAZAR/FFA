@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace zsallazar\ffa\listener;
 
 use pocketmine\block\utils\DyeColor;
+use pocketmine\item\VanillaItems;
 use pocketmine\lang\Translatable;
 use pocketmine\world\particle\PotionSplashParticle;
 use pocketmine\world\sound\PotionSplashSound;
 use zsallazar\ffa\FFA;
+use zsallazar\ffa\form\MainForm;
 use zsallazar\ffa\KitManager;
 use zsallazar\ffa\session\Session;
 use pocketmine\event\player\PlayerExhaustEvent;
@@ -53,7 +55,12 @@ final class PlayerListener implements Listener{
     }
 
     public function onInteract(PlayerInteractEvent $event): void{
-        if ($event->getPlayer()->isAdventure(true)) {
+        $player = $event->getPlayer();
+
+        if ($event->getItem()->getTypeId() === VanillaItems::NETHER_STAR()->getTypeId()) {
+            $player->sendForm(new MainForm(Session::get($player)));
+        }
+        if ($player->isAdventure(true)) {
             $event->cancel();
         }
     }
