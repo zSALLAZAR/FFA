@@ -18,7 +18,7 @@ final class SetupForm extends MenuForm{
         ], function(Player $player, Button $selected) use($session): void{
             match ($selected->getValue()) {
                 0 => $session->isEditingKit() ? $session->stopEditingKit() : $session->editKit(),
-                2 => $player->sendForm(new EditSafeZoneForm()),
+                1 => $player->sendForm(new EditSafeZoneForm()),
                 default => $player->closeAllForms()
             };
         }, function(Player $player) use($session): void{
