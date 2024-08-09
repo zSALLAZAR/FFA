@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace zsallazar\ffa\session;
 
 use pocketmine\inventory\SimpleInventory;
-use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
@@ -107,10 +106,9 @@ final class Session{
 
         $this->player->setGamemode(GameMode::CREATIVE);
 
-        /**
-         * @return Item[]
-         */
-        $removeItemLock = function(SimpleInventory $inv): array{
+        //Remove the item_lock tag so the editor can move/delete the items
+        /** @var SimpleInventory $inv */
+        foreach ([$this->player->getInventory(), $this->player->getArmorInventory(), $this->player->getOffHandInventory()] as $inv) {
             $items = $inv->getContents();
 
             foreach ($items as $item) {
@@ -121,11 +119,9 @@ final class Session{
                     $item->getNamedTag()->removeTag(KitManager::TAG_ITEM_LOCK);
                 }
             }
-            return $items;
-        };
-        $removeItemLock($this->player->getInventory());
-        $removeItemLock($this->player->getArmorInventory());
-        $removeItemLock($this->player->getOffHandInventory());
+
+            $inv->setContents($items);
+        }
 
         $this->player->sendMessage($prefix . TextFormat::GREEN . "You can now edit the FFA-Kit.");
         $this->player->sendMessage($prefix . TextFormat::GREEN . "Drag the items from the creative inventory into your inventory that you want the kit to have.");
