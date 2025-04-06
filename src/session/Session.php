@@ -13,7 +13,6 @@ use pocketmine\world\sound\EndermanTeleportSound;
 use WeakMap;
 use zsallazar\ffa\FFA;
 use zsallazar\ffa\KitManager;
-use zsallazar\ffa\Settings;
 use function microtime;
 use function round;
 
@@ -212,25 +211,7 @@ final class Session{
 
     public function isInSafeZone(): bool{
         $settings = FFA::getInstance()->getSettings();
-        $type = $settings->getSafeZoneType();
-        if ($type === Settings::SAFE_ZONE_TYPE_CIRCLE) {
-            return $this->player->getPosition()->distance($settings->getCircleCenter()) <= $settings->getCircleRadius();
-        }
-        if ($type === Settings::SAFE_ZONE_TYPE_SQUARE) {
-            $from = $settings->getSquareFrom();
-            $to = $settings->getSquareTo();
-            $pos = $this->player->getPosition();
-            $x = $pos->getX();
-            $y = $pos->getY();
-            $z = $pos->getZ();
 
-            return $x >= min($from->getX(), $to->getX())
-                && $x <= max($from->getX(), $to->getX())
-                && $y >= min($from->getY(), $to->getY())
-                && $y <= max($from->getY(), $to->getY())
-                && $z >= min($from->getZ(), $to->getZ())
-                && $z <= max($from->getZ(), $to->getZ());
-        }
-        return false;
+        return $this->player->getPosition()->distance($settings->getCircleCenter()) <= $settings->getCircleRadius();
     }
 }

@@ -1,16 +1,17 @@
 {
   "name": "zsallazar/ffa",
   "description": "A simple ffa plugin for PocketMine-MP",
+  "version": "1.0.0",
   "license": "Apache-2.0",
   "require": {
     "php": "^8.3",
-    "pocketmine/pocketmine-mp": "^5.17.0",
+    "pocketmine/pocketmine-mp": "^5.27.1",
     "frago9876543210/forms": "dev-master"
   },
   "require-dev": {
-    "phpstan/phpstan": "^1.11.10",
-    "phpstan/phpstan-strict-rules": "^1.6.0",
-    "phpstan/extension-installer": "^1.4.1"
+    "phpstan/phpstan": "^1.12.23",
+    "phpstan/phpstan-strict-rules": "^1.6.2",
+    "phpstan/extension-installer": "^1.4.3"
   },
   "autoload": {
     "psr-4": {

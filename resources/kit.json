@@ -1,0 +1,69 @@
+{
+  "inventory": {
+    "1": {
+      "name": "iron_sword",
+      "custom_name": "",
+      "lore": [],
+      "count": 1,
+      "enchantments": [
+        {
+          "name": "sharpness",
+          "level": 1
+        }
+      ]
+    },
+    "2": {
+      "name": "bow",
+      "custom_name": "",
+      "lore": [],
+      "count": 1,
+      "enchantments": []
+    },
+    "8": {
+      "name": "nether_star",
+      "custom_name": "§l§gFFA",
+      "lore": [],
+      "count": 1,
+      "enchantments": []
+    }
+  },
+  "armorInventory": {
+    "0": {
+      "name": "iron_helmet",
+      "custom_name": "",
+      "lore": [],
+      "count": 1,
+      "enchantments": []
+    },
+    "1": {
+      "name": "iron_chestplate",
+      "custom_name": "",
+      "lore": [],
+      "count": 1,
+      "enchantments": []
+    },
+    "2": {
+      "name": "iron_leggings",
+      "custom_name": "",
+      "lore": [],
+      "count": 1,
+      "enchantments": []
+    },
+    "3": {
+      "name": "iron_boots",
+      "custom_name": "",
+      "lore": [],
+      "count": 1,
+      "enchantments": []
+    }
+  },
+  "offHandInventory": {
+    "0": {
+      "name": "arrow",
+      "custom_name": "",
+      "lore": [],
+      "count": 16,
+      "enchantments": []
+    }
+  }
+}

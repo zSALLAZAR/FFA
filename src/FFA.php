@@ -109,46 +109,30 @@ final class FFA extends PluginBase{
             $throwError("settings.combat-time", "a non-negative integer", $combatTime);
         }
 
-        $safeZoneType = $config->getNested("settings.safe-zone.type");
-        if ($safeZoneType !== Settings::SAFE_ZONE_TYPE_CIRCLE && $safeZoneType !== Settings::SAFE_ZONE_TYPE_SQUARE && $safeZoneType !== Settings::SAFE_ZONE_TYPE_NONE) {
-            $throwError("settings.safe-zone.type", "a circle, square or none", $safeZoneType);
+        $safeZoneCenter = $config->getNested("settings.safe-zone.center");
+        if (
+            !is_string($safeZoneCenter) ||
+            count($pos = explode(";", $safeZoneCenter)) !== 3 ||
+            !is_numeric($pos[0]) ||
+            !is_numeric($pos[1]) ||
+            !is_numeric($pos[2])
+        ) {
+            $throwError("settings.safe-zone.center", "3 numbers that are seperated by a semicolon (x;y;z)", $safeZoneCenter);
         }
 
-        $validatePos = function(mixed $value, string $setting) use($throwError): void{
-            if (!is_string($value) || count($pos = explode(";", $value)) !== 3 || !is_numeric($pos[0]) || !is_numeric($pos[1]) || !is_numeric($pos[2])) {
-                $throwError($setting, "3 numbers that are seperated by a semicolon (x;y;z)", $value);
-            }
-        };
-
-        $validatePos($circleCenter = $config->getNested("settings.safe-zone.circle.center"), "settings.safe-zone.circle.center");
-
-        $circleRadius = $config->getNested("settings.safe-zone.circle.radius");
-        if (!is_int($circleRadius) || $circleRadius <= 0) {
-            $throwError("settings.safe-zone.circle.radius", "a positive integer", $circleRadius);
-        }
-
-        $validatePos($squareFrom = $config->getNested("settings.safe-zone.square.from"), "settings.safe-zone.square.from");
-        $validatePos($squareTo = $config->getNested("settings.safe-zone.square.to"), "settings.safe-zone.square.to");
-
-        $armorChangeable = $config->getNested("settings.kit.armor-changeable");
-        if (!is_bool($armorChangeable)) {
-            $throwError("settings.kit.armor-changeable", "a boolean", $armorChangeable);
+        $safeZoneRadius = $config->getNested("settings.safe-zone.radius");
+        if (!is_int($safeZoneRadius) || $safeZoneRadius < 0) {
+            $throwError("settings.safe-zone.radius", "a non-negative integer", $safeZoneRadius);
         }
 
         //TODO: Find a better solution for this
-        $circleCenterPos = explode(";", $circleCenter); // @phpstan-ignore argument.type
-        $squareFromPos = explode(";", $squareFrom); // @phpstan-ignore argument.type
-        $squareToPos = explode(";", $squareTo); // @phpstan-ignore argument.type
+        $circleCenterPos = explode(";", $safeZoneCenter); // @phpstan-ignore argument.type
         $this->settings = new Settings(
             $prefix,
             $scoreboard,
             $combatTime,
-            $safeZoneType,
             new Vector3((float)$circleCenterPos[0], (float)$circleCenterPos[1], (float)$circleCenterPos[2]),
-            $circleRadius,
-            new Vector3((float)$squareFromPos[0], (float)$squareFromPos[1], (float)$squareFromPos[2]),
-            new Vector3((float)$squareToPos[0], (float)$squareToPos[1], (float)$squareToPos[2]),
-            $armorChangeable
+            $safeZoneRadius
         );
     }
 }

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace zsallazar\ffa;
 
 use pocketmine\item\Durable;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\StringToEnchantmentParser;
 use pocketmine\item\Item;
 use pocketmine\item\StringToItemParser;
 use pocketmine\utils\Config;
-use pocketmine\utils\TextFormat;
 
 final class KitManager{
     public const string INVENTORY = "inventory";
@@ -32,87 +32,19 @@ final class KitManager{
     private Config $kit;
 
     /**
-     * @phpstan-var array<string, array<int, Item>>
+     * @phpstan-var array<non-empty-string, array<int, Item>>
      */
     private array $items = [];
 
     public function __construct() {
-        $this->kit = new Config(FFA::getInstance()->getDataFolder() . "kit.json", Config::JSON, [
-            self::INVENTORY => [
-                0 => [
-                    self::NAME => "iron_sword",
-                    self::CUSTOM_NAME => "",
-                    self::LORE => [],
-                    self::COUNT => 1,
-                    self::ENCHANTMENTS => [
-                        [
-                            self::ENCHANTMENT_NAME => "sharpness",
-                            self::ENCHANTMENT_LEVEL => 1
-                        ]
-                    ]
-                ],
-                1 => [
-                    self::NAME => "bow",
-                    self::CUSTOM_NAME => "",
-                    self::LORE => [],
-                    self::COUNT => 1,
-                    self::ENCHANTMENTS => []
-                ],
-                8 => [
-                    self::NAME => "nether_star",
-                    self::CUSTOM_NAME => TextFormat::BOLD . TextFormat::MINECOIN_GOLD . "FFA",
-                    self::LORE => [],
-                    self::COUNT => 1,
-                    self::ENCHANTMENTS => []
-                ]
-            ],
-            self::ARMOR_INVENTORY => [
-                0 => [
-                    self::NAME => "iron_helmet",
-                    self::CUSTOM_NAME => "",
-                    self::LORE => [],
-                    self::COUNT => 1,
-                    self::ENCHANTMENTS => []
-                ],
-                1 => [
-                    self::NAME => "iron_chestplate",
-                    self::CUSTOM_NAME => "",
-                    self::LORE => [],
-                    self::COUNT => 1,
-                    self::ENCHANTMENTS => []
-                ],
-                2 => [
-                    self::NAME => "iron_leggings",
-                    self::CUSTOM_NAME => "",
-                    self::LORE => [],
-                    self::COUNT => 1,
-                    self::ENCHANTMENTS => []
-                ],
-                3 => [
-                    self::NAME => "iron_boots",
-                    self::CUSTOM_NAME => "",
-                    self::LORE => [],
-                    self::COUNT => 1,
-                    self::ENCHANTMENTS => []
-                ]
-            ],
-            self::OFF_HAND_INVENTORY => [
-                0 => [
-                    self::NAME => "arrow",
-                    self::CUSTOM_NAME => "",
-                    self::LORE => [],
-                    self::COUNT => 16,
-                    self::ENCHANTMENTS => [],
-                ]
-            ],
-        ]);
+        $this->kit = new Config(FFA::getInstance()->getDataFolder() . "kit.json", Config::JSON);
 
         foreach ([self::INVENTORY, self::ARMOR_INVENTORY, self::OFF_HAND_INVENTORY] as $key) {
             foreach ($this->loadKitData($key) as $index => $item) {
                 //Don't play the item-drop animation
                 $item->getNamedTag()->setByte(
                     self::TAG_ITEM_LOCK,
-                    $key === self::ARMOR_INVENTORY && FFA::getInstance()->getSettings()->isArmorChangeable() ? self::VALUE_ITEM_LOCK_IN_SLOT : self::VALUE_ITEM_LOCK_IN_INVENTORY
+                    $key === self::ARMOR_INVENTORY ? self::VALUE_ITEM_LOCK_IN_SLOT : self::VALUE_ITEM_LOCK_IN_INVENTORY
                 );
                 if ($item instanceof Durable) {
                     $item->setUnbreakable();
@@ -127,6 +59,7 @@ final class KitManager{
      * @phpstan-return array<int, Item>
      */
     private function loadKitData(string $key): array{
+        $logger = FFA::getInstance()->getLogger();
         /** @phpstan-var array<int, Item> $items */
         $items = [];
 
@@ -143,11 +76,11 @@ final class KitManager{
          *     }>
          * } $data
          */
-        foreach ((array)$this->kit->get($key, []) as $index => $data) {
+        foreach ($this->kit->get($key, []) as $index => $data) {
             /** @var null|Item $item */
             $item = StringToItemParser::getInstance()->parse($name = $data[self::NAME]);
             if ($item === null) {
-                FFA::getInstance()->getLogger()->error("Failed to load unknown item $name");
+                $logger->error("Failed to load unknown item $name");
                 continue;
             }
             $item->setCustomName($data[self::CUSTOM_NAME]);
@@ -155,8 +88,10 @@ final class KitManager{
             $item->setCount($data[self::COUNT]);
 
             foreach ($data[self::ENCHANTMENTS] as $enchantmentInstance) {
-                if (($enchantment = StringToEnchantmentParser::getInstance()->parse($enchantmentInstance[self::ENCHANTMENT_NAME])) === null) {
-                    FFA::getInstance()->getLogger()->error("Failed to load unknown enchantment for $name");
+                /** @var null|Enchantment $enchantment */
+                $enchantment = StringToEnchantmentParser::getInstance()->parse($enchantmentInstance[self::ENCHANTMENT_NAME]);
+                if ($enchantment === null) {
+                    $logger->error("Failed to load unknown enchantment for $name");
                     continue;
                 }
                 $item->addEnchantment(new EnchantmentInstance($enchantment, $enchantmentInstance[self::ENCHANTMENT_LEVEL]));
@@ -184,6 +119,7 @@ final class KitManager{
     public function getOffHandInventoryItems(): array{ return $this->items[self::OFF_HAND_INVENTORY]; }
 
     /**
+     * @phpstan-param non-empty-string $key
      * @phpstan-param array<int, Item> $items
      */
     public function saveKit(string $key, array $items): void{
