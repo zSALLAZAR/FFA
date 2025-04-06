@@ -76,7 +76,7 @@ final class KitManager{
          *     }>
          * } $data
          */
-        foreach ($this->kit->get($key, []) as $index => $data) {
+        foreach ((array)$this->kit->get($key, []) as $index => $data) {
             /** @var null|Item $item */
             $item = StringToItemParser::getInstance()->parse($name = $data[self::NAME]);
             if ($item === null) {

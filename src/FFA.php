@@ -126,7 +126,7 @@ final class FFA extends PluginBase{
         }
 
         //TODO: Find a better solution for this
-        $circleCenterPos = explode(";", $safeZoneCenter); // @phpstan-ignore argument.type
+        $circleCenterPos = explode(";", $safeZoneCenter);
         $this->settings = new Settings(
             $prefix,
             $scoreboard,
