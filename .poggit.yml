@@ -8,6 +8,8 @@ projects:
     libs:
       - src: Frago9876543210/forms/libforms
         version: ^1.0.0
+      - src: poggit/libasynql/libasynql
+        version: ^4.2.3
     lint:
       phpstan: false
 ...

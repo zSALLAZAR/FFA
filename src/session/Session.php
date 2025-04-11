@@ -14,7 +14,6 @@ use WeakMap;
 use zsallazar\ffa\FFA;
 use zsallazar\ffa\KitManager;
 use function microtime;
-use function round;
 
 final class Session{
     /**
@@ -32,23 +31,24 @@ final class Session{
             self::$sessions = $map;
         }
 
-        return self::$sessions[$player] ??= new Session($player);
+        return self::$sessions[$player] ??= new Session($player, new Stats($player->getUniqueId()->getBytes(), $player->getName()));
     }
 
     protected function __construct(
         private readonly Player $player,
 
+        private readonly Stats $stats,
+
         private bool $spectating = false,
         private bool $editingKit = false,
 
-        private int $kills = 0,
-        private int $deaths = 0,
-        private int $highestKillStreak = 0,
         private ?Session $lastDamager = null,
         private ?float $lastDamagerDuration = null
     ) {}
 
     public function getPlayer(): Player{ return $this->player; }
+
+    public function getStats(): Stats{ return $this->stats; }
 
     public function isSpectating(): bool{ return $this->spectating; }
 
@@ -126,7 +126,7 @@ final class Session{
         $this->player->sendMessage($prefix . TextFormat::GREEN . "Drag the items from the creative inventory into your inventory that you want the kit to have.");
     }
 
-    public function stopEditingKit(): void{
+    public function saveKit(): void{
         $kitManager = FFA::getInstance()->getKitManager();
         $kitManager->saveKit(KitManager::INVENTORY, $this->player->getInventory()->getContents());
         $kitManager->saveKit(KitManager::ARMOR_INVENTORY, $this->player->getArmorInventory()->getContents());
@@ -139,28 +139,6 @@ final class Session{
         foreach (self::$sessions as $session) {
             $session->joinArena(true);
         }
-    }
-
-    public function getKills(): int{ return $this->kills; }
-
-    public function addKill(): void{
-        ++$this->kills;
-    }
-
-    public function getDeaths(): int{ return $this->deaths; }
-
-    public function addDeath(): void{
-        ++$this->deaths;
-    }
-
-    public function getKdr(): float{
-        return round($this->kills / ($this->deaths > 0 ? $this->deaths : 1), 2);
-    }
-
-    public function getHighestKillStreak(): int{ return $this->highestKillStreak; }
-
-    public function setHighestKillStreak(int $highestKillStreak): void{
-        $this->highestKillStreak = $highestKillStreak;
     }
 
     public function getLastDamager(): ?self{

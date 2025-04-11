@@ -20,13 +20,11 @@ final class StatsForm extends MenuForm{
 
         parent::__construct("Stats", "View your or other players stats", $buttons, function(Player $player, Button $selected): void{
             match ($selected->getValue()) {
-                0 => $player->sendForm($this), //TODO
-                1 => $player->sendForm($this), //TODO
-                2 => $player->sendForm($this), //TODO
+                0 => $player->sendForm(new PlayerStatsForm(Session::get($player)->getStats(), $this)),
+                1 => $player->sendForm(new ChooseTopStatsForm()),
+                2 => $player->sendForm(new SearchStatsForm($player)),
                 default => $player->closeAllForms()
             };
-        }, function(Player $player): void{
-            $player->sendForm(new MainForm(Session::get($player)));
-        });
+        }, fn(Player $player) => $player->sendForm(new MainForm($player)));
     }
 }

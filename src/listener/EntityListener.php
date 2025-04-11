@@ -24,8 +24,7 @@ final class EntityListener implements Listener{
         $projectile = $event->getEntity();
         $entity = $projectile->getOwningEntity();
 
-        if (
-            $entity instanceof Player &&
+        if ($entity instanceof Player &&
             $projectile instanceof Arrow &&
             $entity->isAdventure(true) &&
             Session::get($entity)->isInSafeZone()
@@ -39,8 +38,7 @@ final class EntityListener implements Listener{
         $entity = $event->getEntity()->getOwningEntity();
         $entityHit = $event->getEntityHit();
 
-        if (
-            $entity instanceof Player &&
+        if ($entity instanceof Player &&
             $entityHit instanceof Player &&
             !Session::get($entityHit)->isInSafeZone() &&
             !$entity->getUniqueId()->equals($entityHit->getUniqueId())

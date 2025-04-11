@@ -9,14 +9,13 @@ use pocketmine\math\Vector3;
 final readonly class Settings{
     /**
      * @phpstan-param non-negative-int $combatTime
-     * @phpstan-param non-negative-int $circleRadius
      */
     public function __construct(
-        private string  $prefix,
-        private bool    $scoreboardEnabled,
-        private int     $combatTime,
+        private string $prefix,
+        private bool $scoreboardEnabled,
+        private int $combatTime,
         private Vector3 $circleCenter,
-        private int     $circleRadius
+        private float $circleRadius
     ) {}
 
     public function getPrefix(): string{ return $this->prefix; }
@@ -30,8 +29,5 @@ final readonly class Settings{
 
     public function getCircleCenter(): Vector3{ return $this->circleCenter; }
 
-    /**
-     * @return non-negative-int
-     */
-    public function getCircleRadius(): int{ return $this->circleRadius; }
+    public function getCircleRadius(): float{ return $this->circleRadius; }
 }

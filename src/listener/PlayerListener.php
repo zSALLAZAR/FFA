@@ -58,7 +58,7 @@ final class PlayerListener implements Listener{
         $player = $event->getPlayer();
 
         if ($event->getItem()->getTypeId() === VanillaItems::NETHER_STAR()->getTypeId()) {
-            $player->sendForm(new MainForm(Session::get($player)));
+            $player->sendForm(new MainForm($player));
         }
         if ($player->isAdventure(true)) {
             $event->cancel();
@@ -85,7 +85,7 @@ final class PlayerListener implements Listener{
         );
         $player->broadcastSound(new PotionSplashSound());
 
-        $session->addDeath();
+        $session->getStats()->addDeath();
         $session->joinArena(false);
         $session->setLastDamager(null);
 
@@ -96,6 +96,7 @@ final class PlayerListener implements Listener{
                 $xpManager = $damager->getXpManager();
                 $effects = $damager->getEffects();
                 $damagerSession = Session::get($damager);
+                $stats = $damagerSession->getStats();
 
                 $xpManager->addXpLevels(1); //Killstreak is increased by 1
                 $xpLevel = $xpManager->getXpLevel();
@@ -108,9 +109,9 @@ final class PlayerListener implements Listener{
                     $effects->add(new EffectInstance(VanillaEffects::STRENGTH(), $xpLevel * 20, 0, true, true));
                 }
 
-                $damagerSession->addKill();
-                if ($xpLevel > $damagerSession->getHighestKillStreak()) {
-                    $damagerSession->setHighestKillStreak($xpLevel);
+                $stats->addKill();
+                if ($xpLevel > $stats->getHighestKillStreak()) {
+                    $stats->setHighestKillStreak($xpLevel);
                 }
 
                 if ($damagerSession->getLastDamager()?->equals($session) ?? false) {

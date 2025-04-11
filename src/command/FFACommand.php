@@ -8,7 +8,6 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
 use zsallazar\ffa\form\MainForm;
-use zsallazar\ffa\session\Session;
 
 final class FFACommand extends Command{
     public function __construct() {
@@ -23,6 +22,6 @@ final class FFACommand extends Command{
             return;
         }
 
-        $sender->sendForm(new MainForm(Session::get($sender)));
+        $sender->sendForm(new MainForm($sender));
     }
 }

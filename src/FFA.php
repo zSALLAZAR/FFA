@@ -13,6 +13,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Throwable;
 use zsallazar\ffa\command\FFACommand;
+use zsallazar\ffa\database\Database;
 use zsallazar\ffa\listener\EntityListener;
 use zsallazar\ffa\listener\InventoryListener;
 use zsallazar\ffa\listener\PlayerListener;
@@ -36,6 +37,7 @@ final class FFA extends PluginBase{
 
     private Settings $settings;
     private KitManager $kitManager;
+    private Database $database;
 
     protected function onEnable(): void{
         self::setInstance($this);
@@ -50,6 +52,7 @@ final class FFA extends PluginBase{
         }
 
         $this->kitManager = new KitManager();
+        $this->database = new Database($this);
 
         $server = $this->getServer();
         $pluginManager = $server->getPluginManager();
@@ -62,9 +65,15 @@ final class FFA extends PluginBase{
         $commandMap->register($this->getName(), new FFACommand());
     }
 
+    protected function onDisable(): void{
+        $this->getDatabase()->getConnector()->close();
+    }
+
     public function getSettings(): Settings{ return $this->settings; }
 
     public function getKitManager(): KitManager{ return $this->kitManager; }
+
+    public function getDatabase(): Database{ return $this->database; }
 
     private function checkConfigVersion(): void{
         if ($this->getConfig()->get("config-version", 0) !== self::CONFIG_VERSION) {
@@ -121,18 +130,17 @@ final class FFA extends PluginBase{
         }
 
         $safeZoneRadius = $config->getNested("settings.safe-zone.radius");
-        if (!is_int($safeZoneRadius) || $safeZoneRadius < 0) {
-            $throwError("settings.safe-zone.radius", "a non-negative integer", $safeZoneRadius);
+        if (!is_numeric($safeZoneRadius) || (float)$safeZoneRadius < 0.0 || (float)$safeZoneRadius > 50.0) {
+            $throwError("settings.safe-zone.radius", "a number between 0 and 50", $safeZoneRadius);
         }
 
-        //TODO: Find a better solution for this
         $circleCenterPos = explode(";", $safeZoneCenter);
         $this->settings = new Settings(
             $prefix,
             $scoreboard,
             $combatTime,
             new Vector3((float)$circleCenterPos[0], (float)$circleCenterPos[1], (float)$circleCenterPos[2]),
-            $safeZoneRadius
+            (float)$safeZoneRadius
         );
     }
 }
