@@ -69,6 +69,7 @@ final class Session{
 
         $this->player->setGamemode(GameMode::SPECTATOR);
         $this->player->setHasBlockCollision(true);
+        $this->player->setFlying(true);
 
         $this->player->sendMessage($prefix . TextFormat::GREEN . "You're now spectating!");
     }
