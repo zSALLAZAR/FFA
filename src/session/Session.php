@@ -121,7 +121,6 @@ final class Session{
 
         $this->player->sendMessage($prefix . TextFormat::GREEN . "You can now edit the FFA-Kit.");
         $this->player->sendMessage($prefix . TextFormat::WHITE . "Drag the items from the creative inventory into your inventory that you want the kit to have.");
-        $this->player->sendTitle("Editing FFA-Kit...", stay: PHP_INT_MAX);
     }
 
     public function saveKit(): void{
@@ -133,7 +132,6 @@ final class Session{
         $this->editingKit = false;
 
         $this->player->sendMessage(FFA::getInstance()->getSettings()->getPrefix() . TextFormat::GREEN . "The Kit was successfully saved!");
-        $this->player->removeTitles();
 
         foreach (self::$sessions as $session) {
             $session->joinArena(true);
