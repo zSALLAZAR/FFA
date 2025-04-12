@@ -11,7 +11,6 @@ use zsallazar\ffa\session\Session;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\world\sound\BlockPunchSound;
-use pocketmine\entity\projectile\Arrow;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
@@ -21,14 +20,13 @@ use pocketmine\world\sound\AmethystBlockChimeSound;
 
 final class EntityListener implements Listener{
     public function onProjectileLaunch(ProjectileLaunchEvent $event): void{
-        $projectile = $event->getEntity();
-        $entity = $projectile->getOwningEntity();
+        $entity = $event->getEntity()->getOwningEntity();
 
-        if ($entity instanceof Player && $projectile instanceof Arrow && $entity->isAdventure(true)) {
+        if ($entity instanceof Player) {
             $session = Session::get($entity);
 
-            if ($session->isInSafeZone() || $session->isEditingKit()) {
-                //Prevents players from shooting with bows inside the safe-zone
+            if (($session->isInSafeZone() && $entity->isAdventure(true)) || $session->isEditingKit()) {
+                //Prevents players from shooting with bows inside the safe-zone or when editing the kit
                 $event->cancel();
             }
         }
