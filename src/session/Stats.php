@@ -49,7 +49,7 @@ final class Stats{
         $ffa = FFA::getInstance();
         $ffa->getDatabase()->getConnector()->executeGeneric(
             "player",
-            ["uuid" => $uuid],
+            ["uuid" => $uuid, "name" => $name],
             onError: fn(SqlError $err) => $ffa->getLogger()->error($err->getMessage())
         );
         $ffa->getDatabase()->getConnector()->executeSelect(
