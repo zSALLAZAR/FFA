@@ -37,7 +37,7 @@ final class TopStatsForm extends MenuForm{
 
         parent::__construct(
             "Top 10 $order[1]",
-            "Choose Top 10 Stats",
+            "",
             $buttons,
             fn(Player $player, Button $selected) => $player->sendForm(new PlayerStatsForm(Stats::fromRow($rows[$selected->getValue()]), $this)),
             fn(Player $player) => $player->sendForm(new ChooseTopStatsForm())
