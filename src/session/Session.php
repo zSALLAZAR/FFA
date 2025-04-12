@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace zsallazar\ffa\session;
 
 use pocketmine\inventory\SimpleInventory;
-use pocketmine\item\VanillaItems;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -14,6 +13,7 @@ use WeakMap;
 use zsallazar\ffa\FFA;
 use zsallazar\ffa\KitManager;
 use function microtime;
+use const PHP_INT_MAX;
 
 final class Session{
     /**
@@ -70,6 +70,7 @@ final class Session{
         $this->player->setGamemode(GameMode::SPECTATOR);
         $this->player->setHasBlockCollision(true);
         $this->player->setFlying(true);
+        $this->player->setAllowFlight(false);
 
         $this->player->sendMessage($prefix . TextFormat::GREEN . "You're now spectating!");
     }
@@ -105,6 +106,8 @@ final class Session{
         $this->addItems();
         $this->player->teleport($this->player->getWorld()->getSafeSpawn());
         $this->player->setGamemode(GameMode::CREATIVE);
+        $this->player->setInvisible();
+        $this->player->setSilent();
 
         //Remove the item_lock tag so the editor can move/delete the items
         /** @var SimpleInventory $inv */
@@ -112,19 +115,15 @@ final class Session{
             $items = $inv->getContents();
 
             foreach ($items as $item) {
-                //The editor should not be able to remove the nether star because it is used to open the forms
-                if ($item->getTypeId() !== VanillaItems::NETHER_STAR()->getTypeId() &&
-                    $item->getNamedTag()->getByte(KitManager::TAG_ITEM_LOCK, 0) !== 0
-                ) {
-                    $item->getNamedTag()->removeTag(KitManager::TAG_ITEM_LOCK);
-                }
+                $item->getNamedTag()->removeTag(KitManager::TAG_ITEM_LOCK);
             }
 
             $inv->setContents($items);
         }
 
         $this->player->sendMessage($prefix . TextFormat::GREEN . "You can now edit the FFA-Kit.");
-        $this->player->sendMessage($prefix . TextFormat::GREEN . "Drag the items from the creative inventory into your inventory that you want the kit to have.");
+        $this->player->sendMessage($prefix . TextFormat::WHITE . "Drag the items from the creative inventory into your inventory that you want the kit to have.");
+        $this->player->sendTitle("Editing FFA-Kit...", stay: PHP_INT_MAX);
     }
 
     public function saveKit(): void{
@@ -136,6 +135,7 @@ final class Session{
         $this->editingKit = false;
 
         $this->player->sendMessage(FFA::getInstance()->getSettings()->getPrefix() . TextFormat::GREEN . "The Kit was successfully saved!");
+        $this->player->removeTitles();
 
         foreach (self::$sessions as $session) {
             $session->joinArena(true);
@@ -161,6 +161,7 @@ final class Session{
 
     public function joinArena(bool $addItems): void{
         $this->player->setGamemode(GameMode::ADVENTURE);
+        $this->player->setInvisible(false);
         $this->player->teleport($this->player->getWorld()->getSafeSpawn());
         $this->player->broadcastSound(new EndermanTeleportSound());
         $this->setLastDamager(null);

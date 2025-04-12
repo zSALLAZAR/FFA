@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace zsallazar\ffa;
 
 use InvalidArgumentException;
+use pocketmine\item\StringToItemParser;
 use pocketmine\math\Vector3;
 use pocketmine\plugin\DisablePluginException;
 use pocketmine\utils\SingletonTrait;
@@ -118,6 +119,11 @@ final class FFA extends PluginBase{
             $throwError("settings.combat-time", "a non-negative integer", $combatTime);
         }
 
+        $formItemName = $config->getNested("settings.form-item");
+        if (!is_string($formItemName) || ($formItem = StringToItemParser::getInstance()->parse($formItemName)) === null) {
+            $throwError("settings.form-item", "a valid item name", $formItemName);
+        }
+
         $safeZoneCenter = $config->getNested("settings.safe-zone.center");
         if (
             !is_string($safeZoneCenter) ||
@@ -139,6 +145,7 @@ final class FFA extends PluginBase{
             $prefix,
             $scoreboard,
             $combatTime,
+            $formItem,
             new Vector3((float)$circleCenterPos[0], (float)$circleCenterPos[1], (float)$circleCenterPos[2]),
             (float)$safeZoneRadius
         );

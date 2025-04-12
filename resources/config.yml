@@ -31,6 +31,9 @@ settings:
     # Set this to 0 if you want to disable this
     combat-time: 10
 
+    # The item that opens the ffa forms
+    form-item: "nether_star"
+
     # The center of the safe-zone will be the spawn-position
     safe-zone:
         center: 0;50;0

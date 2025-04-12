@@ -24,13 +24,13 @@ final class EntityListener implements Listener{
         $projectile = $event->getEntity();
         $entity = $projectile->getOwningEntity();
 
-        if ($entity instanceof Player &&
-            $projectile instanceof Arrow &&
-            $entity->isAdventure(true) &&
-            Session::get($entity)->isInSafeZone()
-        ) {
-            //Prevents players from shooting with bows inside the safe-zone
-            $event->cancel();
+        if ($entity instanceof Player && $projectile instanceof Arrow && $entity->isAdventure(true)) {
+            $session = Session::get($entity);
+
+            if ($session->isInSafeZone() || $session->isEditingKit()) {
+                //Prevents players from shooting with bows inside the safe-zone
+                $event->cancel();
+            }
         }
     }
 
@@ -53,19 +53,26 @@ final class EntityListener implements Listener{
         $item = $event->getItem();
         $player = $event->getEntity();
 
-        //This fixes that picked up arrows do not have the item_lock tag
-        if ($player instanceof Player && $item->getTypeId() === VanillaItems::ARROW()->getTypeId()) {
-            $event->setItem(VanillaItems::AIR());
+        if ($player instanceof Player) {
+            if (Session::get($player)->isEditingKit()) {
+                $event->cancel();
+                return;
+            }
 
-            $item->getNamedTag()->setByte(KitManager::TAG_ITEM_LOCK, KitManager::VALUE_ITEM_LOCK_IN_INVENTORY);
+            //This fixes that picked up arrows do not have the item_lock tag
+            if ($item->getTypeId() === VanillaItems::ARROW()->getTypeId()) {
+                $event->setItem(VanillaItems::AIR());
 
-            $playerInventory = match(true) {
-                $player->getOffHandInventory()->getItem(0)->canStackWith($item) && $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
-                $player->getInventory()->canAddItem($item) => $player->getInventory(),
-                default => null
-            };
+                $item->getNamedTag()->setByte(KitManager::TAG_ITEM_LOCK, KitManager::VALUE_ITEM_LOCK_IN_INVENTORY);
 
-            $playerInventory?->addItem($item);
+                $playerInventory = match(true) {
+                    $player->getOffHandInventory()->getItem(0)->canStackWith($item) && $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
+                    $player->getInventory()->canAddItem($item) => $player->getInventory(),
+                    default => null
+                };
+
+                $playerInventory?->addItem($item);
+            }
         }
     }
 

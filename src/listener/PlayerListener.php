@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace zsallazar\ffa\listener;
 
 use pocketmine\block\utils\DyeColor;
+use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\lang\Translatable;
 use pocketmine\world\particle\PotionSplashParticle;
@@ -43,13 +44,21 @@ final class PlayerListener implements Listener{
         Session::get($player)->joinArena(true);
     }
 
+    public function onMove(PlayerMoveEvent $event): void{
+        if (Session::get($event->getPlayer())->isEditingKit()) {
+            $event->cancel();
+        }
+    }
+
     public function onExhaust(PlayerExhaustEvent $event): void{
         $event->cancel();
     }
 
     public function onDropItem(PlayerDropItemEvent $event): void{
         //Locked items should not be dropped
-        if ($event->getItem()->getNamedTag()->getByte(KitManager::TAG_ITEM_LOCK, 0) !== 0) {
+        if ($event->getItem()->getNamedTag()->getByte(KitManager::TAG_ITEM_LOCK, 0) !== 0 ||
+            Session::get($event->getPlayer())->isEditingKit()
+        ) {
             $event->cancel();
         }
     }
@@ -57,10 +66,10 @@ final class PlayerListener implements Listener{
     public function onInteract(PlayerInteractEvent $event): void{
         $player = $event->getPlayer();
 
-        if ($event->getItem()->getTypeId() === VanillaItems::NETHER_STAR()->getTypeId()) {
+        if ($event->getItem()->getTypeId() === FFA::getInstance()->getSettings()->getFormItem()->getTypeId()) {
             $player->sendForm(new MainForm($player));
         }
-        if ($player->isAdventure(true)) {
+        if ($player->isAdventure(true) || Session::get($player)->isEditingKit()) {
             $event->cancel();
         }
     }

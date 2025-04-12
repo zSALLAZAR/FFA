@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace zsallazar\ffa;
 
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 
 final readonly class Settings{
@@ -14,6 +15,7 @@ final readonly class Settings{
         private string $prefix,
         private bool $scoreboardEnabled,
         private int $combatTime,
+        private Item $formItem,
         private Vector3 $circleCenter,
         private float $circleRadius
     ) {}
@@ -26,6 +28,8 @@ final readonly class Settings{
      * @phpstan-return non-negative-int
      */
     public function getCombatTime(): int{ return $this->combatTime; }
+
+    public function getFormItem(): Item{ return $this->formItem; }
 
     public function getCircleCenter(): Vector3{ return $this->circleCenter; }
 
