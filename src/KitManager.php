@@ -34,7 +34,11 @@ final class KitManager{
     /**
      * @phpstan-var array<non-empty-string, array<int, Item>>
      */
-    private array $items = [];
+    private array $items = [
+        self::INVENTORY => [],
+        self::ARMOR_INVENTORY => [],
+        self::OFF_HAND_INVENTORY => []
+    ];
 
     public function __construct() {
         $this->kit = new Config(FFA::getInstance()->getDataFolder() . "kit.json", Config::JSON);
