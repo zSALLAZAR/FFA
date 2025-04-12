@@ -2,7 +2,7 @@
 -- #{ init
 CREATE TABLE IF NOT EXISTS ffa (
     uuid TEXT PRIMARY KEY,
-    name TEXT PRIMARY KEY,
+    name TEXT,
     kills INTEGER,
     deaths INTEGER,
     kdr FLOAT,
