@@ -1,6 +1,6 @@
 {
   "inventory": {
-    "1": {
+    "0": {
       "name": "iron_sword",
       "custom_name": "",
       "lore": [],
@@ -12,7 +12,7 @@
         }
       ]
     },
-    "2": {
+    "1": {
       "name": "bow",
       "custom_name": "",
       "lore": [],
