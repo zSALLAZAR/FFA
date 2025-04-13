@@ -19,7 +19,7 @@ final class ChooseTopStatsForm extends MenuForm{
             new Button("Top 10 Highest KillStreak")
         ];
 
-        parent::__construct("Top 10 Stats", "Choose Top 10 Stats", $buttons, function(Player $player, Button $selected): void{
+        parent::__construct("Top 10 Stats", "", $buttons, function(Player $player, Button $selected): void{
             $ffa = FFA::getInstance();
             $order = match ($selected->getValue()) {
                 0 => ["kills", "Kills"],

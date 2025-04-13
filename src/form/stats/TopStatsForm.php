@@ -30,9 +30,9 @@ final class TopStatsForm extends MenuForm{
                 0 => TF::MATERIAL_GOLD,
                 1 => TF::MATERIAL_IRON,
                 2 => TF::MATERIAL_COPPER,
-                default => TF::GRAY,
+                default => TF::WHITE,
             };
-            $buttons[$rank] = new Button($rankColor . "#" . ($rank + 1) . TF::WHITE . " " . $row["name"] . TF::EOL . TF::GRAY . $order[1] . ": " . $row[$order[0]]);
+            $buttons[$rank] = new Button($rankColor . "#" . ($rank + 1) . TF::WHITE . " " . $row["name"] . TF::EOL . TF::DARK_GRAY . $order[1] . ": " . $row[$order[0]]);
         }
 
         parent::__construct(
