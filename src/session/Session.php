@@ -13,7 +13,6 @@ use WeakMap;
 use zsallazar\ffa\FFA;
 use zsallazar\ffa\KitManager;
 use function microtime;
-use const PHP_INT_MAX;
 
 final class Session{
     /**
@@ -39,7 +38,6 @@ final class Session{
 
         private readonly Stats $stats,
 
-        private bool $spectating = false,
         private bool $editingKit = false,
 
         private ?Session $lastDamager = null,
@@ -50,51 +48,15 @@ final class Session{
 
     public function getStats(): Stats{ return $this->stats; }
 
-    public function isSpectating(): bool{ return $this->spectating; }
-
-    public function spectate(): void{
-        $prefix = FFA::getInstance()->getSettings()->getPrefix();
-
-        if ($this->isEditingKit()) {
-            $this->player->sendMessage($prefix . TextFormat::RED . "You can't spectate while editing the FFA-Kit.");
-            return;
-        }
-
-        if ($this->getLastDamager() !== null) {
-            $this->player->sendMessage($prefix . TextFormat::RED . "You can't spectate while in combat!");
-            return;
-        }
-
-        $this->spectating = true;
-
-        $this->player->setGamemode(GameMode::SPECTATOR);
-        $this->player->setHasBlockCollision(true);
-
-        $this->player->sendMessage($prefix . TextFormat::GREEN . "You're now spectating!");
-    }
-
-    public function stopSpectating(): void{
-        $this->spectating = false;
-
-        $this->joinArena(true);
-
-        $this->player->sendMessage(FFA::getInstance()->getSettings()->getPrefix() . TextFormat::GREEN . "You're now playing!");
-    }
-
     public function isEditingKit(): bool{ return $this->editingKit; }
 
     public function editKit(): void{
         $prefix = FFA::getInstance()->getSettings()->getPrefix();
 
-        if ($this->isSpectating()) {
-            $this->player->sendMessage($prefix . TextFormat::RED . "You can't edit the FFA-Kit while spectating.");
-            return;
-        }
-
         //Do not let multiple players edit the FFA-Kit
-        foreach (self::$sessions as $session) {
-            if ($session->editingKit) {
-                $this->player->sendMessage($prefix . TextFormat::RED . $session->player->getDisplayName() . " is currently editing the FFA-Kit.");
+        foreach (self::$sessions as $otherSession) {
+            if ($otherSession->editingKit) {
+                $this->player->sendMessage($prefix . TextFormat::RED . $otherSession->player->getDisplayName() . " is currently editing the FFA-Kit.");
                 return;
             }
         }
@@ -104,8 +66,6 @@ final class Session{
         $this->addItems();
         $this->player->teleport($this->player->getWorld()->getSafeSpawn());
         $this->player->setGamemode(GameMode::CREATIVE);
-        $this->player->setInvisible();
-        $this->player->setSilent();
 
         //Remove the item_lock tag so the editor can move/delete the items
         /** @var SimpleInventory $inv */
@@ -157,7 +117,6 @@ final class Session{
 
     public function joinArena(bool $addItems): void{
         $this->player->setGamemode(GameMode::ADVENTURE);
-        $this->player->setInvisible(false);
         $this->player->teleport($this->player->getWorld()->getSafeSpawn());
         $this->player->broadcastSound(new EndermanTeleportSound());
         $this->setLastDamager(null);

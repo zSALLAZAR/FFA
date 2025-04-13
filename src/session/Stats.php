@@ -47,12 +47,12 @@ final class Stats{
         private int $highestKillStreak = 0
     ) {
         $ffa = FFA::getInstance();
-        $ffa->getDatabase()->getConnector()->executeGeneric(
+        $ffa->getDatabase()->executeGeneric(
             "player",
             ["uuid" => $uuid, "name" => $name],
             onError: fn(SqlError $err) => $ffa->getLogger()->error($err->getMessage())
         );
-        $ffa->getDatabase()->getConnector()->executeSelect(
+        $ffa->getDatabase()->executeSelect(
             "statsByUuid",
             ["uuid" => $uuid],
             function(array $rows): void{
@@ -98,15 +98,15 @@ final class Stats{
 
     private function update(string $stat, float|int $value): void{
         $ffa = FFA::getInstance();
-        $connector = FFA::getInstance()->getDatabase()->getConnector();
-        $connector->executeGeneric(
+        $database = FFA::getInstance()->getDatabase();
+        $database->executeGeneric(
             "update",
             ["uuid" => $this->uuid, "stat" => $stat, "value" => $value],
             onError: fn(SqlError $err) => $ffa->getLogger()->error($err->getMessage())
         );
 
         if ($stat === self::STAT_KILLS || $stat === self::STAT_DEATHS) {
-            $connector->executeGeneric(
+            $database->executeGeneric(
                 "update",
                 ["uuid" => $this->uuid, "stat" => self::STAT_KDR, "value" => round($this->kills / ($this->deaths > 0 ? $this->deaths : 1), 2)],
                 onError: fn(SqlError $err) => $ffa->getLogger()->error($err->getMessage())

@@ -9,7 +9,5 @@ author: zSALLAZAR
 permissions:
   ffa.command:
     default: true
-  ffa.spectate:
-    default: op
   ffa.setup:
     default: op

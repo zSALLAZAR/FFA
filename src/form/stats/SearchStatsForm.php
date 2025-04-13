@@ -23,7 +23,7 @@ final class SearchStatsForm extends CustomForm{
             $inputPlayerName = $response->getValues()[0];
             $ffa = FFA::getInstance();
 
-            $ffa->getDatabase()->getConnector()->executeSelect(
+            $ffa->getDatabase()->executeSelect(
                 "statsByName",
                 ["name" => $inputPlayerName],
                 function(array $rows) use($player, $inputPlayerName): void{

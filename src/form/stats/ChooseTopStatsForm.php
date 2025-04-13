@@ -29,7 +29,7 @@ final class ChooseTopStatsForm extends MenuForm{
                 default => ["", ""]
             };
 
-            $ffa->getDatabase()->getConnector()->executeSelect(
+            $ffa->getDatabase()->executeSelect(
                 "top",
                 ["order" => $order[0]],
                 fn(array $rows) => $player->sendForm(new TopStatsForm($rows, $order)),

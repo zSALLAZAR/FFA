@@ -9,12 +9,14 @@ use pocketmine\item\StringToItemParser;
 use pocketmine\math\Vector3;
 use pocketmine\plugin\DisablePluginException;
 use pocketmine\utils\SingletonTrait;
+use poggit\libasynql\DataConnector;
+use poggit\libasynql\libasynql;
+use poggit\libasynql\SqlError;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Throwable;
 use zsallazar\ffa\command\FFACommand;
-use zsallazar\ffa\database\Database;
 use zsallazar\ffa\listener\EntityListener;
 use zsallazar\ffa\listener\InventoryListener;
 use zsallazar\ffa\listener\PlayerListener;
@@ -38,7 +40,7 @@ final class FFA extends PluginBase{
 
     private Settings $settings;
     private KitManager $kitManager;
-    private Database $database;
+    private DataConnector $database;
 
     protected function onEnable(): void{
         self::setInstance($this);
@@ -51,9 +53,9 @@ final class FFA extends PluginBase{
             $this->getLogger()->error("Failed to load the config: " . $e->getMessage());
             throw new DisablePluginException();
         }
+        $this->loadDatabase();
 
         $this->kitManager = new KitManager();
-        $this->database = new Database($this);
 
         $server = $this->getServer();
         $pluginManager = $server->getPluginManager();
@@ -67,14 +69,14 @@ final class FFA extends PluginBase{
     }
 
     protected function onDisable(): void{
-        $this->getDatabase()->getConnector()->close();
+        $this->database->close();
     }
 
     public function getSettings(): Settings{ return $this->settings; }
 
     public function getKitManager(): KitManager{ return $this->kitManager; }
 
-    public function getDatabase(): Database{ return $this->database; }
+    public function getDatabase(): DataConnector{ return $this->database; }
 
     private function checkConfigVersion(): void{
         if ($this->getConfig()->get("config-version", 0) !== self::CONFIG_VERSION) {
@@ -149,5 +151,16 @@ final class FFA extends PluginBase{
             new Vector3((float)$circleCenterPos[0], (float)$circleCenterPos[1], (float)$circleCenterPos[2]),
             (float)$safeZoneRadius
         );
+    }
+
+    private function loadDatabase(): void{
+        $this->database = libasynql::create($this, $this->getConfig()->get("database"), [
+            "sqlite" => "sqlite.sql",
+            "mysql" => "mysql.sql",
+        ]);
+        $this->database->executeGeneric("init", onError: function(SqlError $error): void{
+            $this->getLogger()->error($error->getMessage());
+        });
+        $this->database->waitAll();
     }
 }
