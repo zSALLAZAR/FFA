@@ -11,6 +11,7 @@ use pocketmine\item\enchantment\StringToEnchantmentParser;
 use pocketmine\item\Item;
 use pocketmine\item\StringToItemParser;
 use pocketmine\utils\Config;
+use Symfony\Component\Filesystem\Path;
 
 final class KitManager{
     public const string INVENTORY = "inventory";
@@ -32,7 +33,11 @@ final class KitManager{
     private Config $kit;
 
     /**
-     * @phpstan-var array<non-empty-string, array<int, Item>>
+     * @phpstan-var array{
+     *     inventory: array<int, Item>,
+     *     armorInventory: array<int, Item>,
+     *     offHandInventory: array<int, Item>
+     * }
      */
     private array $items = [
         self::INVENTORY => [],
@@ -41,7 +46,7 @@ final class KitManager{
     ];
 
     public function __construct() {
-        $this->kit = new Config(FFA::getInstance()->getDataFolder() . "kit.json", Config::JSON);
+        $this->kit = new Config(Path::join(FFA::getInstance()->getDataFolder(), "kit.json"), Config::JSON);
 
         foreach ([self::INVENTORY, self::ARMOR_INVENTORY, self::OFF_HAND_INVENTORY] as $key) {
             foreach ($this->loadKitData($key) as $index => $item) {
