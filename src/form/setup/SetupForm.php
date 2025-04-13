@@ -14,7 +14,7 @@ final class SetupForm extends MenuForm{
     public function __construct(Player $player) {
         $session = Session::get($player);
 
-        parent::__construct("Setup", "To change the spawn use /setworldspawn", [
+        parent::__construct("Setup", "", [
             new Button($session->isEditingKit() ? "Save kit" : "Edit kit"),
             new Button("Edit safe-zone")
         ], function(Player $player, Button $selected) use($session): void{

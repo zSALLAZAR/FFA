@@ -7,6 +7,7 @@ namespace zsallazar\ffa\form\stats;
 use forms\menu\Button;
 use forms\MenuForm;
 use pocketmine\player\Player;
+use pocketmine\utils\TextFormat;
 use zsallazar\ffa\form\MainForm;
 use zsallazar\ffa\session\Session;
 
@@ -18,7 +19,7 @@ final class StatsForm extends MenuForm{
             new Button("Search stats")
         ];
 
-        parent::__construct("Stats", "View your or other players stats", $buttons, function(Player $player, Button $selected): void{
+        parent::__construct("Stats", TextFormat::GRAY . "View your or other players stats", $buttons, function(Player $player, Button $selected): void{
             match ($selected->getValue()) {
                 0 => $player->sendForm(new PlayerStatsForm(Session::get($player)->getStats(), $this)),
                 1 => $player->sendForm(new ChooseTopStatsForm()),

@@ -7,7 +7,7 @@ namespace zsallazar\ffa\form\stats;
 use forms\menu\Button;
 use forms\MenuForm;
 use pocketmine\player\Player;
-use pocketmine\utils\TextFormat;
+use pocketmine\utils\TextFormat as TF;
 use zsallazar\ffa\session\Stats;
 
 final class TopStatsForm extends MenuForm{
@@ -27,12 +27,12 @@ final class TopStatsForm extends MenuForm{
 
         foreach ($rows as $rank => $row) {
             $rankColor = match ($rank) {
-                0 => TextFormat::MATERIAL_GOLD,
-                1 => TextFormat::MATERIAL_IRON,
-                2 => TextFormat::MATERIAL_COPPER,
-                default => TextFormat::GRAY,
+                0 => TF::MATERIAL_GOLD,
+                1 => TF::MATERIAL_IRON,
+                2 => TF::MATERIAL_COPPER,
+                default => TF::GRAY,
             };
-            $buttons[$rank] = new Button($rankColor . "#" . ($rank + 1) . TextFormat::WHITE . " " . $row["name"] . TextFormat::EOL . $order[1] . ": " . $row[$order[0]]);
+            $buttons[$rank] = new Button($rankColor . "#" . ($rank + 1) . TF::WHITE . " " . $row["name"] . TF::EOL . TF::GRAY . $order[1] . ": " . $row[$order[0]]);
         }
 
         parent::__construct(
