@@ -17,8 +17,13 @@ INSERT OR IGNORE INTO ffa (uuid, name, kills, deaths, kdr, highestKillStreak) VA
 -- #{ update
 -- #	:uuid string
 -- #	:stat string
--- #	:value int|float
+-- #	:value int
 UPDATE ffa SET :stat = :value WHERE uuid = :uuid;
+-- #}
+-- #{ updateKdr
+-- #	:uuid string
+-- #	:value float
+UPDATE ffa SET kdr = :value WHERE uuid = :uuid;
 -- #}
 -- #{ statsByUuid
 -- #	:uuid string

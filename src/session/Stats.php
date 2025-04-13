@@ -59,10 +59,10 @@ final class Stats{
                 if (count($rows) === 0) {
                     throw new AssumptionFailedError("The player should already be registered in the Database");
                 }
-                $this->kills = $rows[0]["kills"];
-                $this->deaths = $rows[0]["deaths"];
-                $this->kdr = $rows[0]["kdr"];
-                $this->highestKillStreak = $rows[0]["highestKillStreak"];
+                $this->kills = (int)$rows[0][self::STAT_KILLS];
+                $this->deaths = (int)$rows[0][self::STAT_DEATHS];
+                $this->kdr = (float)$rows[0][self::STAT_KDR];
+                $this->highestKillStreak = (int)$rows[0][self::STAT_HIGHEST_KILLSTREAK];
             },
             fn(SqlError $err) => $ffa->getLogger()->error($err->getMessage())
         );
@@ -96,7 +96,7 @@ final class Stats{
         $this->update(self::STAT_HIGHEST_KILLSTREAK, $highestKillStreak);
     }
 
-    private function update(string $stat, float|int $value): void{
+    private function update(string $stat, int $value): void{
         $ffa = FFA::getInstance();
         $database = FFA::getInstance()->getDatabase();
         $database->executeGeneric(
@@ -107,8 +107,8 @@ final class Stats{
 
         if ($stat === self::STAT_KILLS || $stat === self::STAT_DEATHS) {
             $database->executeGeneric(
-                "update",
-                ["uuid" => $this->uuid, "stat" => self::STAT_KDR, "value" => round($this->kills / ($this->deaths > 0 ? $this->deaths : 1), 2)],
+                "updateKdr",
+                ["uuid" => $this->uuid, "value" => round($this->kills / ($this->deaths > 0 ? $this->deaths : 1), 2)],
                 onError: fn(SqlError $err) => $ffa->getLogger()->error($err->getMessage())
             );
         }
