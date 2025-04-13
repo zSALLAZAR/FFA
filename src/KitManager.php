@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace zsallazar\ffa;
 
+use InvalidArgumentException;
 use pocketmine\item\Durable;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\StringToEnchantmentParser;
 use pocketmine\item\Item;
 use pocketmine\item\StringToItemParser;
 use pocketmine\utils\Config;
 use Symfony\Component\Filesystem\Path;
+use function copy;
+use function file_exists;
 
 final class KitManager{
     public const string INVENTORY = "inventory";
@@ -46,7 +48,12 @@ final class KitManager{
     ];
 
     public function __construct() {
-        $this->kit = new Config(Path::join(FFA::getInstance()->getDataFolder(), "kit.json"), Config::JSON);
+        $ffa = FFA::getInstance();
+        $kitJson = Path::join($ffa->getDataFolder(), "kit.json");
+        if (!file_exists($kitJson)) {
+            copy(Path::join($ffa->getResourceFolder(), "kit.json"), $kitJson);
+        }
+        $this->kit = new Config($kitJson, Config::JSON);
 
         foreach ([self::INVENTORY, self::ARMOR_INVENTORY, self::OFF_HAND_INVENTORY] as $key) {
             foreach ($this->loadKitData($key) as $index => $item) {
@@ -68,9 +75,13 @@ final class KitManager{
      * @phpstan-return array<int, Item>
      */
     private function loadKitData(string $key): array{
-        $logger = FFA::getInstance()->getLogger();
         /** @phpstan-var array<int, Item> $items */
         $items = [];
+        $kitData = $this->kit->get($key, []);
+
+        if (!is_array($kitData)) {
+            throw new InvalidArgumentException("Value of '$key' key should be an array");
+        }
 
         /**
          * @var int $index
@@ -85,23 +96,19 @@ final class KitManager{
          *     }>
          * } $data
          */
-        foreach ((array)$this->kit->get($key, []) as $index => $data) {
-            /** @var null|Item $item */
-            $item = StringToItemParser::getInstance()->parse($name = $data[self::NAME]);
+        foreach ($kitData as $index => $data) {
+            $item = StringToItemParser::getInstance()->parse($data[self::NAME]);
             if ($item === null) {
-                $logger->error("Failed to load unknown item $name");
-                continue;
+                throw new InvalidArgumentException("Value of '$key.$index." . self::NAME . "' is not a valid item name");
             }
             $item->setCustomName($data[self::CUSTOM_NAME]);
             $item->setLore($data[self::LORE]);
             $item->setCount($data[self::COUNT]);
 
             foreach ($data[self::ENCHANTMENTS] as $enchantmentInstance) {
-                /** @var null|Enchantment $enchantment */
                 $enchantment = StringToEnchantmentParser::getInstance()->parse($enchantmentInstance[self::ENCHANTMENT_NAME]);
                 if ($enchantment === null) {
-                    $logger->error("Failed to load unknown enchantment for $name");
-                    continue;
+                    throw new InvalidArgumentException("Value of '$key.$index." . self::ENCHANTMENTS . self::ENCHANTMENT_NAME . "' is not a valid enchantment");
                 }
                 $item->addEnchantment(new EnchantmentInstance($enchantment, $enchantmentInstance[self::ENCHANTMENT_LEVEL]));
             }
