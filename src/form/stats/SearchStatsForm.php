@@ -34,6 +34,6 @@ final class SearchStatsForm extends CustomForm{
                 },
                 fn(SqlError $err) => $ffa->getLogger()->error($err->getMessage())
             );
-        }, static fn(Player $player) => $player->sendForm(new StatsForm()));
+        }, fn(Player $player) => $player->sendForm(new StatsForm()));
     }
 }

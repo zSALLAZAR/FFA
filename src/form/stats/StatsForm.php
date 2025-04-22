@@ -24,6 +24,6 @@ final class StatsForm extends MenuForm{
                 2 => $player->sendForm(new SearchStatsForm($player)),
                 default => $player->closeAllForms()
             };
-        }, static fn(Player $player) => $player->sendForm(new MainForm($player)));
+        }, fn(Player $player) => $player->sendForm(new MainForm($player)));
     }
 }

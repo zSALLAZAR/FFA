@@ -22,7 +22,7 @@ final class PlayerStatsForm extends MenuForm{
             $content,
             [],
             static fn(Player $player, int $selectedOption) => $player->sendForm($lastForm),
-            static fn(Player $player) => $player->sendForm($lastForm)
+            fn(Player $player) => $player->sendForm($lastForm)
         );
     }
 }

@@ -23,6 +23,6 @@ final class SetupForm extends MenuForm{
                 1 => $player->sendForm(new EditSafeZoneForm()),
                 default => $player->closeAllForms()
             };
-        }, static fn(Player $player) => $player->sendForm(new MainForm($player)));
+        }, fn(Player $player) => $player->sendForm(new MainForm($player)));
     }
 }
