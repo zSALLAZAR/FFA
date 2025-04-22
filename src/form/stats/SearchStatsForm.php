@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace zsallazar\ffa\form\stats;
 
-use forms\CustomForm;
-use forms\CustomFormResponse;
-use forms\element\Input;
+use dktapps\pmforms\CustomForm;
+use dktapps\pmforms\CustomFormResponse;
+use dktapps\pmforms\element\Input;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use poggit\libasynql\SqlError;
@@ -17,10 +17,9 @@ use function count;
 final class SearchStatsForm extends CustomForm{
     public function __construct(Player $player, ?string $error = null) {
         parent::__construct("Search Stats", [
-            new Input($error === null ? "Type a name" : $error, $player->getName())
-        ], function(Player $player, CustomFormResponse $response): void{
-            /** @var string $inputPlayerName */
-            $inputPlayerName = $response->getValues()[0];
+            new Input("name", $error ?? "Type a name", $player->getName())
+        ], function(Player $player, CustomFormResponse $data): void{
+            $inputPlayerName = $data->getString("name");
             $ffa = FFA::getInstance();
 
             $ffa->getDatabase()->executeSelect(
@@ -35,6 +34,6 @@ final class SearchStatsForm extends CustomForm{
                 },
                 fn(SqlError $err) => $ffa->getLogger()->error($err->getMessage())
             );
-        }, fn(Player $player) => $player->sendForm(new StatsForm()));
+        }, static fn(Player $player) => $player->sendForm(new StatsForm()));
     }
 }

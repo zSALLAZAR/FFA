@@ -4,24 +4,22 @@ declare(strict_types=1);
 
 namespace zsallazar\ffa\form\stats;
 
-use forms\menu\Button;
-use forms\MenuForm;
+use dktapps\pmforms\MenuForm;
+use dktapps\pmforms\MenuOption;
 use pocketmine\player\Player;
 use poggit\libasynql\SqlError;
 use zsallazar\ffa\FFA;
 
 final class ChooseTopStatsForm extends MenuForm{
     public function __construct() {
-        $buttons = [
-            new Button("Top 10 Kills"),
-            new Button("Top 10 Deaths"),
-            new Button("Top 10 K/D"),
-            new Button("Top 10 Highest KillStreak")
-        ];
-
-        parent::__construct("Top 10 Stats", "", $buttons, function(Player $player, Button $selected): void{
+        parent::__construct("Top 10 Stats", "", [
+            new MenuOption("Top 10 Kills"),
+            new MenuOption("Top 10 Deaths"),
+            new MenuOption("Top 10 K/D"),
+            new MenuOption("Top 10 Highest KillStreak")
+        ], static function(Player $player, int $selectedOption): void{
             $ffa = FFA::getInstance();
-            $order = match ($selected->getValue()) {
+            $order = match ($selectedOption) {
                 0 => ["kills", "Kills"],
                 1 => ["deaths", "Deaths"],
                 2 => ["kdr", "K/D"],
@@ -35,6 +33,6 @@ final class ChooseTopStatsForm extends MenuForm{
                 fn(array $rows) => $player->sendForm(new TopStatsForm($rows, $order)),
                 fn(SqlError $err) => $ffa->getLogger()->error($err->getMessage())
             );
-        }, fn(Player $player) => $player->sendForm(new StatsForm()));
+        }, static fn(Player $player) => $player->sendForm(new StatsForm()));
     }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace zsallazar\ffa\form\setup;
 
-use forms\menu\Button;
-use forms\MenuForm;
+use dktapps\pmforms\MenuForm;
+use dktapps\pmforms\MenuOption;
 use pocketmine\player\Player;
 use zsallazar\ffa\form\MainForm;
 use zsallazar\ffa\session\Session;
@@ -15,14 +15,14 @@ final class SetupForm extends MenuForm{
         $session = Session::get($player);
 
         parent::__construct("Setup", "", [
-            new Button($session->isEditingKit() ? "Save kit" : "Edit kit"),
-            new Button("Edit safe-zone")
-        ], function(Player $player, Button $selected) use($session): void{
-            match ($selected->getValue()) {
+            new MenuOption($session->isEditingKit() ? "Save kit" : "Edit kit"),
+            new MenuOption("Edit safe-zone")
+        ], static function(Player $player, int $selectedOption) use($session): void{
+            match ($selectedOption) {
                 0 => $session->isEditingKit() ? $session->saveKit() : $session->editKit(),
                 1 => $player->sendForm(new EditSafeZoneForm()),
                 default => $player->closeAllForms()
             };
-        }, fn(Player $player) => $player->sendForm(new MainForm($player)));
+        }, static fn(Player $player) => $player->sendForm(new MainForm($player)));
     }
 }

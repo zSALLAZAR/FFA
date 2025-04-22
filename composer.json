@@ -6,11 +6,11 @@
   "require": {
     "php": "^8.3",
     "pocketmine/pocketmine-mp": "^5.27.1",
-    "frago9876543210/forms": "dev-master",
+    "dktapps/pmforms": "^2.3.0",
     "sof3/libasynql": "^4.2.3"
   },
   "require-dev": {
-    "phpstan/phpstan": "^1.12.23",
+    "phpstan/phpstan": "^1.12.24",
     "phpstan/phpstan-strict-rules": "^1.6.2",
     "phpstan/extension-installer": "^1.4.3"
   },
@@ -24,11 +24,5 @@
     "allow-plugins": {
       "phpstan/extension-installer": true
     }
-  },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/Frago9876543210/forms"
-    }
-  ]
+  }
 }
