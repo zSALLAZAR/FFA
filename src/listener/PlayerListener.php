@@ -28,15 +28,12 @@ use pocketmine\network\mcpe\protocol\types\BoolGameRule;
 final class PlayerListener implements Listener{
     public function onJoin(PlayerJoinEvent $event): void{
         $player = $event->getPlayer();
-        $xpManager = $player->getXpManager();
 
         $player->getNetworkSession()->sendDataPacket(GameRulesChangedPacket::create([
             "doImmediateRespawn" => new BoolGameRule(true, false),
             "showTags" => new BoolGameRule(false, false) //Don't show item tags
         ]));
-        $player->setHealth($player->getMaxHealth());
-        $xpManager->setCanAttractXpOrbs(false);
-        $xpManager->setXpAndProgress(0, 0); //Reset killstreak
+        $player->getXpManager()->setCanAttractXpOrbs(false);
 
         Session::get($player)->joinArena(true);
     }

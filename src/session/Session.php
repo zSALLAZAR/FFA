@@ -119,6 +119,8 @@ final class Session{
         $this->player->setGamemode(GameMode::ADVENTURE);
         $this->player->teleport($this->player->getWorld()->getSafeSpawn());
         $this->player->broadcastSound(new EndermanTeleportSound());
+        $this->player->setHealth($this->player->getMaxHealth());
+        $this->player->getXpManager()->setXpAndProgress(0, 0); //Reset killstreak
         $this->setLastDamager(null);
 
         if ($addItems) {
