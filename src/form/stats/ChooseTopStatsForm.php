@@ -33,6 +33,8 @@ final class ChooseTopStatsForm extends MenuForm{
                 fn(array $rows) => $player->sendForm(new TopStatsForm($rows, $order)),
                 fn(SqlError $err) => $ffa->getLogger()->error($err->getMessage())
             );
-        }, fn(Player $player) => $player->sendForm(new StatsForm()));
+        }, static function(Player $player): void{
+            $player->sendForm(new StatsForm());
+        });
     }
 }

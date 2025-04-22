@@ -28,6 +28,8 @@ final class EditSafeZoneForm extends CustomForm{
         ], static function(Player $player, CustomFormResponse $data) use($ffa): void{
             $ffa->getConfig()->setNested("settings.safe-zone.center", $data->getString("center"));
             $ffa->getConfig()->setNested("settings.safe-zone.radius", $data->getFloat("radius"));
-        }, fn(Player $player) => $player->sendForm(new SetupForm($player)));
+        }, static function(Player $player): void{
+            $player->sendForm(new SetupForm($player));
+        });
     }
 }

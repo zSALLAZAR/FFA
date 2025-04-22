@@ -21,8 +21,12 @@ final class PlayerStatsForm extends MenuForm{
             $stats->getName(),
             $content,
             [],
-            static fn(Player $player, int $selectedOption) => $player->sendForm($lastForm),
-            fn(Player $player) => $player->sendForm($lastForm)
+            static function(Player $player, int $selectedOption) use($lastForm): void{
+                $player->sendForm($lastForm);
+            },
+            static function(Player $player) use($lastForm): void{
+                $player->sendForm($lastForm);
+            }
         );
     }
 }

@@ -39,8 +39,12 @@ final class TopStatsForm extends MenuForm{
             "Top 10 $order[1]",
             "",
             $options,
-            fn(Player $player, int $selectedOption) => $player->sendForm(new PlayerStatsForm(Stats::fromRow($rows[$selectedOption]), $this)),
-            fn(Player $player) => $player->sendForm(new ChooseTopStatsForm())
+            function(Player $player, int $selectedOption) use($rows): void{
+                $player->sendForm(new PlayerStatsForm(Stats::fromRow($rows[$selectedOption]), $this));
+            },
+            static function(Player $player): void{
+                $player->sendForm(new ChooseTopStatsForm());
+            }
         );
     }
 }
