@@ -6,8 +6,8 @@ projects:
   FFA:
     path: ""
     libs:
-      - src: Frago9876543210/forms/libforms
-        version: ^1.0.0
+      - src: dktapps-pm-pl/pmforms/pmforms
+        version: ^2.1.0
       - src: poggit/libasynql/libasynql
         version: ^4.2.3
     lint:
