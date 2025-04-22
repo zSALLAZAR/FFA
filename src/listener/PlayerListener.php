@@ -7,6 +7,7 @@ namespace zsallazar\ffa\listener;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\lang\Translatable;
+use pocketmine\player\Player;
 use pocketmine\world\particle\PotionSplashParticle;
 use pocketmine\world\sound\PotionSplashSound;
 use zsallazar\ffa\FFA;
@@ -71,8 +72,6 @@ final class PlayerListener implements Listener{
     public function onDeath(PlayerDeathEvent $event): void{
         $player = $event->getPlayer();
         $deathMessage = $event->getDeathMessage();
-        $session = Session::get($player);
-        $lastDamagerSession = $session->getLastDamager();
 
         if ($deathMessage instanceof Translatable) {
             $event->setDeathMessage($deathMessage->prefix(FFA::getInstance()->getSettings()->getPrefix()));
@@ -80,6 +79,20 @@ final class PlayerListener implements Listener{
         $event->setKeepInventory(true); //So we don't have to give new items every time a player dies
         $event->setDrops([]);
         $event->setXpDropAmount(0);
+
+        $this->onKill($player);
+
+        Session::get($player)->joinArena(false);
+    }
+
+    public function onQuit(PlayerQuitEvent $event): void{
+        //Prevent combat logging
+        $this->onKill($event->getPlayer());
+    }
+
+    private function onKill(Player $player): void{
+        $session = Session::get($player);
+        $lastDamagerSession = $session->getLastDamager();
 
         //Creates potion-splash-particles at death
         $player->getWorld()->addParticle(
@@ -94,7 +107,6 @@ final class PlayerListener implements Listener{
             $lastDamager = $lastDamagerSession->getPlayer();
             $xpManager = $lastDamager->getXpManager();
             $effects = $lastDamager->getEffects();
-
             $stats = $lastDamagerSession->getStats();
 
             $xpManager->addXpLevels(1); //Killstreak is increased by 1
@@ -117,17 +129,6 @@ final class PlayerListener implements Listener{
                 //Resets the last damager of the killer if the victim is the last damager
                 $lastDamagerSession->setLastDamager(null);
             }
-        }
-
-        $session->joinArena(false);
-    }
-
-    public function onQuit(PlayerQuitEvent $event): void{
-        $player = $event->getPlayer();
-
-        if (Session::get($player)->getLastDamager() !== null) {
-            //Prevent combat logging
-            $player->kill(); //TODO: Needs testing
         }
     }
 }
