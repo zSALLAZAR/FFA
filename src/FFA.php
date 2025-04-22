@@ -102,7 +102,7 @@ final class FFA extends PluginBase{
      */
     private function loadConfig(): void{
         $config = $this->getConfig();
-        $throwError = function(string $setting, string $type, mixed $value): void{
+        $throwError = static function(string $setting, string $type, mixed $value): void{
             throw new InvalidArgumentException("Setting '$setting' is invalid. '" . array_key_last(explode(".", $setting)) . "' must be $type, got " . $value . "(" . gettype($value) . ")");
         };
 

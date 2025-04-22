@@ -25,7 +25,7 @@ final class EntityListener implements Listener{
         if ($entity instanceof Player) {
             $session = Session::get($entity);
 
-            if (($session->isInSafeZone() && $entity->isAdventure(true)) || $session->isEditingKit()) {
+            if ($session->isEditingKit() || ($session->isInSafeZone() && $entity->isAdventure(true))) {
                 //Prevents players from shooting with bows inside the safe-zone or when editing the kit
                 $event->cancel();
             }
