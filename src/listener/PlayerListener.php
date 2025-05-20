@@ -14,7 +14,6 @@ use zsallazar\ffa\FFA;
 use zsallazar\ffa\form\MainForm;
 use zsallazar\ffa\KitManager;
 use zsallazar\ffa\session\Session;
-use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
@@ -35,6 +34,7 @@ final class PlayerListener implements Listener{
             "showTags" => new BoolGameRule(false, false) //Don't show item tags
         ]));
         $player->getXpManager()->setCanAttractXpOrbs(false);
+        $player->getHungerManager()->setEnabled(false);
 
         Session::get($player)->joinArena(true);
     }
@@ -43,10 +43,6 @@ final class PlayerListener implements Listener{
         if (Session::get($event->getPlayer())->isEditingKit()) {
             $event->cancel();
         }
-    }
-
-    public function onExhaust(PlayerExhaustEvent $event): void{
-        $event->cancel();
     }
 
     public function onDropItem(PlayerDropItemEvent $event): void{
