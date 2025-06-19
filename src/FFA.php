@@ -36,7 +36,7 @@ final class FFA extends PluginBase{
         reset as private;
     }
 
-    private const float CONFIG_VERSION = 1.0;
+    private const CONFIG_VERSION = 1.0;
 
     private Settings $settings;
     private KitManager $kitManager;

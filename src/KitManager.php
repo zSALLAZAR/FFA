@@ -16,21 +16,21 @@ use function copy;
 use function file_exists;
 
 final class KitManager{
-    public const string INVENTORY = "inventory";
-    public const string ARMOR_INVENTORY = "armorInventory";
-    public const string OFF_HAND_INVENTORY = "offHandInventory";
+    public const INVENTORY = "inventory";
+    public const ARMOR_INVENTORY = "armorInventory";
+    public const OFF_HAND_INVENTORY = "offHandInventory";
 
-    private const string NAME = "name";
-    private const string CUSTOM_NAME = "custom_name";
-    private const string LORE = "lore";
-    private const string COUNT = "count";
-    private const string ENCHANTMENTS = "enchantments";
-    private const string ENCHANTMENT_NAME = "name";
-    private const string ENCHANTMENT_LEVEL = "level";
+    private const NAME = "name";
+    private const CUSTOM_NAME = "custom_name";
+    private const LORE = "lore";
+    private const COUNT = "count";
+    private const ENCHANTMENTS = "enchantments";
+    private const ENCHANTMENT_NAME = "name";
+    private const ENCHANTMENT_LEVEL = "level";
 
-    public const string TAG_ITEM_LOCK = "minecraft:item_lock";
-    public const int VALUE_ITEM_LOCK_IN_SLOT = 1;
-    public const int VALUE_ITEM_LOCK_IN_INVENTORY = 2;
+    public const TAG_ITEM_LOCK = "minecraft:item_lock";
+    public const VALUE_ITEM_LOCK_IN_SLOT = 1;
+    public const VALUE_ITEM_LOCK_IN_INVENTORY = 2;
 
     private Config $kit;
 

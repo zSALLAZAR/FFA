@@ -10,12 +10,12 @@ use zsallazar\ffa\FFA;
 use function count;
 
 final class Stats{
-    public const string STAT_UUID = "uuid";
-    public const string STAT_NAME = "name";
-    public const string STAT_KILLS = "kills";
-    public const string STAT_DEATHS = "deaths";
-    public const string STAT_KDR = "kdr";
-    public const string STAT_HIGHEST_KILLSTREAK = "highestKillStreak";
+    public const STAT_UUID = "uuid";
+    public const STAT_NAME = "name";
+    public const STAT_KILLS = "kills";
+    public const STAT_DEATHS = "deaths";
+    public const STAT_KDR = "kdr";
+    public const STAT_HIGHEST_KILLSTREAK = "highestKillStreak";
 
     /**
      * @phpstan-param array{
